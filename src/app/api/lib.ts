@@ -12,3 +12,5 @@ export const getUserInfo = async () => {
 
   return user.user;
 };
+
+
