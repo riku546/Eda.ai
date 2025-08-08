@@ -7,7 +7,9 @@ const page = () => {
   const [messages, setMessages] = useState<string[]>([""]);
 
   async function sendChatMessage(message: string): Promise<void> {
-    const res = await apiClient.chat.$post({ body: { message } });
+    const res = await apiClient.chat.$post({
+      body: { message, model: "gemini-2.0-flash-lite" },
+    });
 
     setMessages((prev) => [...prev, res.message]);
   }
