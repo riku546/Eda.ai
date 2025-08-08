@@ -3,15 +3,23 @@
 import { apiClient } from "@/lib/apiClient";
 import { useState } from "react";
 
-async function sendChatMessage(message: string): Promise<string> {
-  const res = await apiClient.chat.$post({ body: { message } });
-
-  return res.message;
-}
 const page = () => {
+  const [messages, setMessages] = useState<string[]>([""]);
+
+  async function sendChatMessage(message: string): Promise<void> {
+    const res = await apiClient.chat.$post({ body: { message } });
+
+    setMessages((prev) => [...prev, res.message]);
+  }
+
   const [input, setInput] = useState("");
   return (
     <div>
+      <div>
+        {messages.map((message) => (
+          <div key={message}>{message}</div>
+        ))}
+      </div>
       <input
         onChange={(e) => setInput(e.target.value)}
         value={input}
