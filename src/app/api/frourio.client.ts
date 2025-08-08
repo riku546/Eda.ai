@@ -1,8 +1,10 @@
 import type { FrourioClientOption } from '@frourio/next';
 import { z } from 'zod';
+import { fc_n9jg9t, $fc_n9jg9t } from './chat/frourio.client';
 import { frourioSpec } from './frourio'
 
 export const fc = (option?: FrourioClientOption) => ({
+  'chat': fc_n9jg9t(option),
   $url: $url(option),
   $build(req?: { init?: RequestInit }): [
     key: { dir: string },
@@ -14,6 +16,7 @@ export const fc = (option?: FrourioClientOption) => ({
 });
 
 export const $fc = (option?: FrourioClientOption) => ({
+  'chat': $fc_n9jg9t(option),
   $url: {
     get(): string {
       const result = $url(option).get();
