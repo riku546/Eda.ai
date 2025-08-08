@@ -6,7 +6,7 @@
     "dev": "run-p dev:*",
     "dev:next": "next dev",
     "dev:frourio": "frourio-next --watch",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "biome lint .",
     "check": "biome check --apply .",
