@@ -1,4 +1,4 @@
-import { GoogleGenAI, type Content } from "@google/genai";
+import { type Content, GoogleGenAI } from "@google/genai";
 
 export const models = [
   "gemini-2.0-flash-lite",
@@ -11,7 +11,7 @@ export const models = [
 export const sendMessageInChat = async (
   history: Content[],
   message: string,
-  model: (typeof models)[number]
+  model: (typeof models)[number],
 ) => {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
