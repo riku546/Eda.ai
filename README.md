@@ -5,6 +5,11 @@
   npm i
 ```
 
+## lefthook有効化
+```
+npm run prepare
+```
+
 ## .envの作成と設定
 .envは配られているものを使用してください。
 ```
