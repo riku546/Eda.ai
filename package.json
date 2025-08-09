@@ -7,7 +7,7 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "biome lint .",
-    "check": "biome check --apply .",
+    "check": "biome check",
     "format": "biome check --write .",
     "format:prettier": "prettier --write .",
     "typecheck": "tsc --noEmit",
