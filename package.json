@@ -12,7 +12,8 @@
     "check": "biome check --apply .",
     "format": "biome check --write .",
     "format:prettier": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
