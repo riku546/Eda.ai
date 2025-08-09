@@ -1,12 +1,12 @@
-import { sendMessageInChat } from "../(LLM)/gemini";
 import { type NextRequest, NextResponse } from "next/server";
+import { sendMessageInChat } from "../(LLM)/gemini";
 
 export async function POST(request: NextRequest) {
   const { message, model } = await request.json();
 
   const history = [
     {
-      parts: [{ text: "初めまして、私の手伝いをしてください。" }],
+      parts: [{ text: "初めまして、私の手伝いをしてください" }],
       role: "user",
     },
   ];
