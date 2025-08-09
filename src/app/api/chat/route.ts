@@ -1,15 +1,15 @@
 import { sendMessageInChat } from "../(LLM)/gemini";
-import { createRoute } from "./frourio.server";
+import { type NextRequest, NextResponse } from "next/server";
 
-export const { POST } = createRoute({
-  post: async ({ body: { message, model } }) => {
-    const history = [
-      {
-        parts: [{ text: "初めまして、私の手伝いをしてください。" }],
-        role: "user",
-      },
-    ];
-    const response = await sendMessageInChat(history, message, model);
-    return { status: 200, body: { message: response } };
-  },
-});
+export async function POST(request: NextRequest) {
+  const { message, model } = await request.json();
+
+  const history = [
+    {
+      parts: [{ text: "初めまして、私の手伝いをしてください。" }],
+      role: "user",
+    },
+  ];
+  const response = await sendMessageInChat(history, message, model);
+  return NextResponse.json({ message: response });
+}
