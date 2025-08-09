@@ -1,17 +1,15 @@
 "use client";
 
-import { apiClient } from "@/lib/apiClient";
+import { apiClient } from "@/lib/trpc";
 import { useState } from "react";
 
 const page = () => {
   const [messages, setMessages] = useState<string[]>([""]);
 
   async function sendChatMessage(message: string): Promise<void> {
-    const res = await apiClient.chat.$post({
-      body: { message, model: "gemini-2.0-flash-lite" },
-    });
+    const res = await apiClient.gemini.mutate({ message });
 
-    setMessages((prev) => [...prev, res.message]);
+    setMessages((prev) => [...prev, res]);
   }
 
   const [input, setInput] = useState("");

@@ -3,16 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "run-p dev:*",
-    "dev:next": "next dev",
-    "dev:frourio": "frourio-next --watch",
+    "dev": "next dev",
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "biome lint .",
-    "check": "biome check --apply .",
+    "check": "biome check",
     "format": "biome check --write .",
     "format:prettier": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -21,6 +20,8 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@prisma/client": "^6.6.0",
+    "@trpc/client": "^11.4.4",
+    "@trpc/server": "^11.4.4",
     "better-auth": "^1.2.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -43,7 +44,6 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@eslint/js": "^9.25.0",
-    "@frourio/next": "^0.13.0",
     "@tailwindcss/postcss": "^4",
     "@types/formidable": "^3.4.5",
     "@types/node": "^20",
@@ -53,7 +53,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "5.9.2",
     "typescript-eslint": "^8.30.1"
   },
   "overrides": {
