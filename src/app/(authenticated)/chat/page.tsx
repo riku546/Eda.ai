@@ -7,7 +7,9 @@ const page = () => {
   const [messages, setMessages] = useState<string[]>([""]);
 
   async function sendChatMessage(message: string): Promise<void> {
-    const res = await apiClient.gemini.mutate({ message });
+    const res = await apiClient.gemini.mutate({
+      messageContent: { text: message },
+    });
 
     setMessages((prev) => [...prev, res]);
   }
