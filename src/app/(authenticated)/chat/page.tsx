@@ -20,6 +20,7 @@ const page = () => {
           <div key={message}>{message}</div>
         ))}
       </div>
+      <p>test</p>
       <input
         onChange={(e) => setInput(e.target.value)}
         value={input}
