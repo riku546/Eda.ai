@@ -7,7 +7,7 @@ export const models = [
   "gemini-2.5-flash-lite",
 ] as const;
 
-export const sendMessageInChat = async (
+export const generateContent = async (
   history: Content[],
   messageContent: { text: string; file?: Blob },
   model: (typeof models)[number],

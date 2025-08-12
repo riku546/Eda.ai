@@ -1,6 +1,6 @@
 import { initTRPC } from "@trpc/server";
 import { z } from "zod";
-import { sendMessageInChat } from "../../(LLM)/gemini";
+import { generateContent } from "../../(LLM)/gemini";
 
 const t = initTRPC.create();
 
@@ -27,7 +27,7 @@ export const apiRoutes = router({
       }),
     )
     .mutation(async ({ input }) => {
-      const res = await sendMessageInChat(
+      const res = await generateContent(
         [],
         input.messageContent,
         "gemini-2.0-flash-lite",
