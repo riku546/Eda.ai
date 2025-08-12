@@ -17,6 +17,7 @@ npm run prepare
 ```
 
 ## ローカルDB起動
+docker desktopアプリを起動して、llm-branchを起動する。
 ```
  docker compose up -d
 ```
