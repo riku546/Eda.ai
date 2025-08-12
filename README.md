@@ -23,7 +23,7 @@ npm run prepare
 
 ## マイグレーション
 ```
- npx prisma db migrate dev
+ npx prisma  migrate dev
 ```
 
 ## サーバー起動
