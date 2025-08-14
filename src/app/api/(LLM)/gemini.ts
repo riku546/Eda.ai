@@ -1,16 +1,15 @@
-import { type Content, GoogleGenAI } from "@google/genai";
+import type { Blob, Content } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 export const models = [
   "gemini-2.0-flash-lite",
   "gemini-2.0-flash",
   "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
-  "gemini-2.5-pro",
 ] as const;
 
-export const sendMessageInChat = async (
+export const generateContent = async (
   history: Content[],
-  message: string,
+  messageContent: { text: string; file?: Blob },
   model: (typeof models)[number],
 ) => {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -21,7 +20,7 @@ export const sendMessageInChat = async (
       history: history,
     })
     .sendMessage({
-      message: message,
+      message: { text: messageContent.text, inlineData: messageContent.file },
     });
 
   return response.text ?? "";
