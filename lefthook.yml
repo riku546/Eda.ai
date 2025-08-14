@@ -16,21 +16,24 @@ post-merge:
   commands:
     prisma-db-push-on-schema-change:
       run: |
-        CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD | tr -d '\r')
+        BASE_REF=${ORIG_HEAD:-HEAD^}
+        CHANGED_FILES=$(git diff --name-only "$BASE_REF" HEAD | tr -d '\r')
         if echo "$CHANGED_FILES" | grep -x -q 'prisma/schema.prisma'; then
           npx prisma db push || exit 1
         fi
         true
     npm-install-on-package-json-change:
       run: |
-        CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD | tr -d '\r')
+        BASE_REF=${ORIG_HEAD:-HEAD^}
+        CHANGED_FILES=$(git diff --name-only "$BASE_REF" HEAD | tr -d '\r')
         if echo "$CHANGED_FILES" | grep -x -q 'package.json'; then
           npm install || exit 1
         fi
         true
     prepare-on-lefthook-config-change:
       run: |
-        CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD | tr -d '\r')
+        BASE_REF=${ORIG_HEAD:-HEAD^}
+        CHANGED_FILES=$(git diff --name-only "$BASE_REF" HEAD | tr -d '\r')
         if echo "$CHANGED_FILES" | grep -x -q 'lefthook.yml'; then
           npm run prepare || exit 1
         fi
