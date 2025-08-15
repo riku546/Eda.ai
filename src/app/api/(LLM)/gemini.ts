@@ -7,24 +7,26 @@ export const models = [
   "gemini-2.5-flash-lite",
 ] as const;
 
-export const generateContent = async (
-  history: Content[] | undefined,
-  messageContent: { text: string; file?: Blob },
-) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export class Gemini {
+  generateContent = async (
+    history: Content[] | undefined,
+    messageContent: { text: string; file?: Blob },
+  ) => {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const response = await ai.chats
-    .create({
-      model: "gemini-2.0-flash-lite",
-      history: history,
-    })
-    .sendMessage({
-      message: { text: messageContent.text, inlineData: messageContent.file },
-    });
+    const response = await ai.chats
+      .create({
+        model: "gemini-2.0-flash-lite",
+        history: history,
+      })
+      .sendMessage({
+        message: { text: messageContent.text, inlineData: messageContent.file },
+      });
 
-  return response.text ?? "";
-};
+    return response.text ?? "";
+  };
 
-export const generateSummaryPrompt = (inputText: string) => {
-  return `以下のテキストの要約を一文で作成してください。テキスト：${inputText}`;
-};
+  generateSummaryPrompt = (inputText: string) => {
+    return `以下のテキストの要約を一文で作成してください。テキスト：${inputText}`;
+  };
+}

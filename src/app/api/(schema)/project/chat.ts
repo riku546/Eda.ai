@@ -36,3 +36,5 @@ export const newChatInputSchema = z.object({
   inputText: z.string(),
   inputFile: base64ImageSchema.nullable(),
 });
+
+export type NewChatInput = z.infer<typeof newChatInputSchema>;
