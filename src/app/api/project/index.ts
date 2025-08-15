@@ -27,10 +27,12 @@ export const projectRouter = router({
     new: procedure.input(newChatInputSchema).mutation(async ({ input }) => {
       return await projectController.createChat(input);
     }),
-    getMessage: procedure
-      .input(getMessageInputSchema)
-      .query(async ({ input }) => {
-        return await projectRepository.getMessages(input.branchId);
-      }),
+    branch: router({
+      getMessage: procedure
+        .input(getMessageInputSchema)
+        .query(async ({ input }) => {
+          return await projectRepository.getMessages(input.branchId);
+        }),
+    }),
   }),
 });
