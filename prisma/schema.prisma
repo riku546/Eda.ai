@@ -17,6 +17,8 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  projects      Project[]
+  chats         Chat[]
 
   @@unique([email])
   @@map("user")
@@ -65,4 +67,106 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Project {
+  id          String   @id @default(uuid()) 
+  instruction String
+  name        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chats       ChatInProject[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("project")
+}
+
+model ChatInProject {
+  id        String   @id @default(uuid()) 
+  summary   String
+  isPinned  Boolean  @default(false)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  branches  BranchInProject[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chat_in_project")
+}
+
+model BranchInProject {
+  id              String           @id @default(uuid()) 
+  summary         String
+  parentBranchId  String?
+  parentBranch    BranchInProject?          @relation("BranchToBranch", fields: [parentBranchId], references: [id], onDelete: SetNull)
+  childBranches   BranchInProject[]         @relation("BranchToBranch")
+  isMerged        Boolean          @default(false)
+  chatId          String
+  chat            ChatInProject             @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  messages MessageInProject[]
+  createdAt       DateTime         @default(now())
+
+  @@map("branch_in_project")
+}
+
+model MessageInProject {
+  id              String           @id @default(uuid()) 
+  promptText      String
+  promptFile      String?
+  parentId String?
+  parent   MessageInProject?  @relation("MessageToMessage", fields: [parentId], references: [id], onDelete: SetNull)
+  children   MessageInProject[] @relation("MessageToMessage")
+  response        String
+  branchId        String
+  branch          BranchInProject           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  
+
+  @@map("message_in_project")
+}
+
+
+model Chat {
+  id        String   @id @default(uuid()) 
+  summary   String
+  isPinned  Boolean  @default(false)
+  branches  Branch[]
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("chat")
+}
+
+model Branch {
+  id              String           @id @default(uuid()) 
+  summary         String
+  parentBranchId  String?
+  parentBranch    Branch?          @relation("BranchToBranch", fields: [parentBranchId], references: [id], onDelete: SetNull)
+  childBranches   Branch[]         @relation("BranchToBranch")
+  isMerged        Boolean          @default(false)
+  chatId          String
+  chat            Chat             @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  messages Message[]
+  createdAt       DateTime         @default(now())
+
+  @@map("branch")
+}
+
+model Message {
+  id              String           @id @default(uuid()) 
+  promptText      String
+  promptFile      String?
+  parentId String?
+  parent   Message?  @relation("MessageToMessage", fields: [parentId], references: [id], onDelete: SetNull)
+  children   Message[] @relation("MessageToMessage")
+  response        String
+  branchId        String
+  branch          Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt       DateTime         @default(now())
+  
+
+  @@map("message")
 }
