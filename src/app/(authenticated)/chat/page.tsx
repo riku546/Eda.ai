@@ -1,18 +1,17 @@
 "use client";
 
-import { apiClient } from "@/lib/trpc";
 import { useState } from "react";
 
 const page = () => {
-  const [messages, setMessages] = useState<string[]>([""]);
+  const [messages, _setMessages] = useState<string[]>([""]);
 
-  async function sendChatMessage(message: string): Promise<void> {
-    const res = await apiClient.gemini.mutate({
-      messageContent: { text: message },
-    });
+  // async function sendChatMessage(message: string): Promise<void> {
+  //   const res = await apiClient.gemini.mutate({
+  //     messageContent: { text: message },
+  //   });
 
-    setMessages((prev) => [...prev, res]);
-  }
+  //   setMessages((prev) => [...prev, res]);
+  // }
 
   const [input, setInput] = useState("");
   return (
@@ -28,11 +27,7 @@ const page = () => {
         type="text"
         className="rounded-md border-2 border-gray-300 p-2"
       />
-      <button
-        type="button"
-        onClick={() => sendChatMessage(input)}
-        disabled={!input}
-      >
+      <button type="button" disabled={!input}>
         送信
       </button>
     </div>
