@@ -3,6 +3,7 @@ import { ProjectRepository } from "../(Repository)/project";
 import { instructionSchema } from "../(schema)/project";
 import {
   chatListInputSchema,
+  getMessageInputSchema,
   newChatInputSchema,
 } from "../(schema)/project/chat";
 import { procedure, router } from "../trpc/[trpc]/index";
@@ -26,5 +27,10 @@ export const projectRouter = router({
     new: procedure.input(newChatInputSchema).mutation(async ({ input }) => {
       return await projectController.createChat(input);
     }),
+    getMessage: procedure
+      .input(getMessageInputSchema)
+      .query(async ({ input }) => {
+        return await projectRepository.getMessages(input.branchId);
+      }),
   }),
 });

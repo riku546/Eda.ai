@@ -37,4 +37,8 @@ export const newChatInputSchema = z.object({
   inputFile: base64ImageSchema.nullable(),
 });
 
+export const getMessageInputSchema = z.object({
+  branchId: z.string().uuid(),
+});
+
 export type NewChatInput = z.infer<typeof newChatInputSchema>;

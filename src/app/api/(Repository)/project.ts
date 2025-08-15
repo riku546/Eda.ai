@@ -59,4 +59,11 @@ export class ProjectRepository {
       };
     });
   };
+
+  getMessages = async (branchId: string) => {
+    return await prisma.messageInProject.findMany({
+      where: { branchId },
+      orderBy: { createdAt: "asc" }, // 作成日時で昇順にソート
+    });
+  };
 }
