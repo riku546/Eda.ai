@@ -8,15 +8,14 @@ export const models = [
 ] as const;
 
 export const generateContent = async (
-  history: Content[],
+  history: Content[] | undefined,
   messageContent: { text: string; file?: Blob },
-  model: (typeof models)[number],
 ) => {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   const response = await ai.chats
     .create({
-      model: model,
+      model: "gemini-2.0-flash-lite",
       history: history,
     })
     .sendMessage({
@@ -24,4 +23,8 @@ export const generateContent = async (
     });
 
   return response.text ?? "";
+};
+
+export const generateSummaryPrompt = (inputText: string) => {
+  return `以下のテキストの要約を一文で作成してください。テキスト：${inputText}`;
 };
