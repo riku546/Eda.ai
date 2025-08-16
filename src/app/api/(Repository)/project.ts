@@ -6,6 +6,7 @@ export class ProjectRepository {
       where: { userId },
     });
   };
+
   updateInstruction = async (projectId: string, instruction: string) => {
     await prisma.project.update({
       where: { id: projectId },
@@ -108,6 +109,33 @@ export class ProjectRepository {
         summary,
         parentBranchId,
         chatId,
+      },
+    });
+  };
+
+  getSpecificBranch = async (id: string) => {
+    return await prisma.branchInProject.findUnique({
+      where: { id },
+    });
+  };
+
+  getDescendantBranches = async (baseBranchId: string) => {
+    return prisma.branchInProject.findUnique({
+      where: { id: baseBranchId },
+      include: { childBranches: true },
+    });
+  };
+
+  //特定のbranch（branchIdsは紐付いている全てのブランチ）を親ブランチにマージする
+  updateBranchInMessage = async (newBranchId: string, branchIds: string[]) => {
+    return await prisma.messageInProject.updateMany({
+      where: {
+        branchId: {
+          in: branchIds,
+        },
+      },
+      data: {
+        branchId: newBranchId,
       },
     });
   };

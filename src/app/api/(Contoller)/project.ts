@@ -48,6 +48,21 @@ export class ProjectController {
     return newMessage;
   };
 
+  mergeBranch = async (branchId: string) => {
+    const branch = await projectRepository.getSpecificBranch(branchId);
+    if (!branch) throw new Error("Branch not found");
+
+    const parentBranchId = branch.parentBranchId;
+    if (!parentBranchId) throw new Error("Parent branch not found");
+
+    const descendantBranchIds = await this.getDescendantBranches(branchId);
+
+    await projectRepository.updateBranchInMessage(
+      parentBranchId,
+      descendantBranchIds,
+    );
+  };
+
   //引数のmessageIdから親メッセージを辿ることで、今までのメッセージを取得する
   private getMessageHistory = async (messageId: string) => {
     const messageHistory: MessageInProject[] = [];
@@ -67,5 +82,31 @@ export class ProjectController {
     }
 
     return messageHistory;
+  };
+
+  //幅優先探索でbranchIdの子孫ブランチを取得する
+  private getDescendantBranches = async (branchId: string) => {
+    const descendantBranchIds: string[] = [branchId];
+    const queue: string[] = [branchId];
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const currentId = queue.shift();
+
+      if (!currentId) break;
+
+      const currentBranch =
+        await projectRepository.getDescendantBranches(currentId);
+      if (!currentBranch) break;
+
+      for (const child of currentBranch.childBranches) {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          descendantBranchIds.push(child.id);
+          queue.push(child.id);
+        }
+      }
+    }
+    return descendantBranchIds;
   };
 }

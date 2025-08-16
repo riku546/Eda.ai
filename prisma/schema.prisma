@@ -101,7 +101,6 @@ model BranchInProject {
   parentBranchId  String?
   parentBranch    BranchInProject?          @relation("BranchToBranch", fields: [parentBranchId], references: [id], onDelete: SetNull)
   childBranches   BranchInProject[]         @relation("BranchToBranch")
-  isMerged        Boolean          @default(false)
   chatId          String
   chat            ChatInProject             @relation(fields: [chatId], references: [id], onDelete: Cascade)
   messages MessageInProject[]
@@ -146,7 +145,6 @@ model Branch {
   parentBranchId  String?
   parentBranch    Branch?          @relation("BranchToBranch", fields: [parentBranchId], references: [id], onDelete: SetNull)
   childBranches   Branch[]         @relation("BranchToBranch")
-  isMerged        Boolean          @default(false)
   chatId          String
   chat            Chat             @relation(fields: [chatId], references: [id], onDelete: Cascade)
   messages Message[]

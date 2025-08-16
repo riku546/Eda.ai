@@ -5,3 +5,7 @@ export const newBranchInputSchema = z.object({
   parentBranchId: z.string().uuid(),
   chatId: z.string().uuid(),
 });
+
+export const mergeBranchInputSchema = z.object({
+  branchId: z.string().uuid(),
+});
