@@ -14,6 +14,10 @@ const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 
 export const projectRouter = router({
+  list: procedure.query(async () => {
+    const userId = "fdsjjj";
+    return await projectRepository.getProjectList(userId);
+  }),
   updateInstruction: procedure
     .input(instructionSchema)
     .mutation(async ({ input }) => {

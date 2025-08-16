@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 
 export class ProjectRepository {
+  getProjectList = async (userId: string) => {
+    return await prisma.project.findMany({
+      where: { userId },
+    });
+  };
   updateInstruction = async (projectId: string, instruction: string) => {
     await prisma.project.update({
       where: { id: projectId },
