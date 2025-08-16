@@ -1,6 +1,7 @@
 import { ProjectController } from "../(Contoller)/project";
 import { ProjectRepository } from "../(Repository)/project";
 import { instructionSchema } from "../(schema)/project";
+import { newBranchInputSchema } from "../(schema)/project/branch";
 import {
   chatListInputSchema,
   getMessageInputSchema,
@@ -39,6 +40,13 @@ export const projectRouter = router({
         .mutation(async ({ input }) => {
           return await projectController.sendMessage(input);
         }),
+      new: procedure.input(newBranchInputSchema).mutation(async ({ input }) => {
+        return await projectRepository.createBranch(
+          input.summary,
+          input.parentBranchId,
+          input.chatId,
+        );
+      }),
     }),
   }),
 });

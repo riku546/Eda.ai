@@ -92,4 +92,18 @@ export class ProjectRepository {
 
     return message;
   };
+
+  createBranch = async (
+    summary: string,
+    parentBranchId: string,
+    chatId: string,
+  ) => {
+    return await prisma.branchInProject.create({
+      data: {
+        summary,
+        parentBranchId,
+        chatId,
+      },
+    });
+  };
 }
