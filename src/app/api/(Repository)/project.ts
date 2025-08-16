@@ -66,4 +66,30 @@ export class ProjectRepository {
       orderBy: { createdAt: "asc" }, // 作成日時で昇順にソート
     });
   };
+
+  createMessage = async (
+    branchId: string,
+    promptText: string,
+    promptFile: string | null,
+    response: string,
+    parentId: string,
+  ) => {
+    return await prisma.messageInProject.create({
+      data: {
+        promptText,
+        promptFile,
+        parentId,
+        response,
+        branchId,
+      },
+    });
+  };
+
+  getSpecificMessage = async (messageId: string) => {
+    const message = await prisma.messageInProject.findUnique({
+      where: { id: messageId },
+    });
+
+    return message;
+  };
 }

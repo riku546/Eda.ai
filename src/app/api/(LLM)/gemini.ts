@@ -1,5 +1,6 @@
 import type { Blob, Content } from "@google/genai";
 import { GoogleGenAI } from "@google/genai";
+import type { MessageInProject } from "@prisma/client";
 
 export const models = [
   "gemini-2.0-flash-lite",
@@ -24,6 +25,33 @@ export class Gemini {
       });
 
     return response.text ?? "";
+  };
+
+  formatHistoryForGemini = (
+    history: MessageInProject[],
+  ): Array<{
+    parts: Array<{ text: string; inlineData?: { data: string } }>;
+    role: string;
+  }> => {
+    return history.flatMap((message) => {
+      const userMessage = {
+        parts: [
+          {
+            text: message.promptText,
+            inlineData: { data: message.promptFile },
+          },
+        ],
+        role: "user",
+      };
+
+      // AIのレスポンス
+      const modelMessage = {
+        parts: [{ text: message.response }],
+        role: "model",
+      };
+
+      return [userMessage, modelMessage];
+    });
   };
 
   generateSummaryPrompt = (inputText: string) => {

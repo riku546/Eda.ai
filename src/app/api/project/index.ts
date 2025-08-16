@@ -5,6 +5,7 @@ import {
   chatListInputSchema,
   getMessageInputSchema,
   newChatInputSchema,
+  sendMessageInputSchema,
 } from "../(schema)/project/chat";
 import { procedure, router } from "../trpc/[trpc]/index";
 
@@ -32,6 +33,11 @@ export const projectRouter = router({
         .input(getMessageInputSchema)
         .query(async ({ input }) => {
           return await projectRepository.getMessages(input.branchId);
+        }),
+      sendMessage: procedure
+        .input(sendMessageInputSchema)
+        .mutation(async ({ input }) => {
+          return await projectController.sendMessage(input);
         }),
     }),
   }),
