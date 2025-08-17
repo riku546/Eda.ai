@@ -1,5 +1,5 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { apiRoutes } from "./index";
+import { apiRoutes } from "./routers/_index";
 function handler(req: Request) {
   return fetchRequestHandler({
     endpoint: "/api/trpc",
