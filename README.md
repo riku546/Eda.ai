@@ -17,13 +17,14 @@ npm run prepare
 ```
 
 ## ローカルDB起動
+docker desktopアプリを起動して、llm-branchを起動。
 ```
  docker compose up -d
 ```
 
 ## マイグレーション
 ```
- npx prisma db migrate dev
+ npx prisma  migrate dev
 ```
 
 ## サーバー起動
