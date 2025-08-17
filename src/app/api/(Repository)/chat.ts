@@ -77,4 +77,48 @@ export class ChatRepository {
       },
     });
   };
+
+  getSpecificBranch = async (branchId: string) => {
+    return await prisma.branch.findUnique({
+      where: { id: branchId },
+    });
+  };
+
+  getDescendantBranches = async (branchId: string) => {
+    return await prisma.branch.findUnique({
+      where: { id: branchId },
+      include: { childBranches: true },
+    });
+  };
+
+  updateBranchInMessage = async (
+    parentBranchId: string,
+    branchIds: string[],
+  ) => {
+    return await prisma.message.updateMany({
+      where: { branchId: { in: branchIds } },
+      data: { branchId: parentBranchId },
+    });
+  };
+
+  createBranch = async (
+    summary: string,
+    parentBranchId: string,
+    chatId: string,
+  ) => {
+    return await prisma.branch.create({
+      data: {
+        summary,
+        parentBranchId,
+        chatId,
+      },
+    });
+  };
+
+  getMessages = async (branchId: string) => {
+    return await prisma.message.findMany({
+      where: { branchId },
+      orderBy: { createdAt: "asc" },
+    });
+  };
 }

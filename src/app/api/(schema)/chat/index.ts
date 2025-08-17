@@ -13,5 +13,22 @@ export const sendMessageInputSchema = z.object({
   latestMessageId: z.string().uuid(),
 });
 
+export const getMessageInputSchema = z.object({
+  branchId: z.string().uuid(),
+});
+
+export const newBranchInputSchema = z.object({
+  summary: z.string(),
+  parentBranchId: z.string().uuid(),
+  chatId: z.string().uuid(),
+});
+
+export const mergeBranchInputSchema = z.object({
+  branchId: z.string().uuid(),
+});
+
 export type CreateChatInput = z.infer<typeof createChatInputSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageInputSchema>;
+export type GetMessageInput = z.infer<typeof getMessageInputSchema>;
+export type NewBranchInput = z.infer<typeof newBranchInputSchema>;
+export type MergeBranchInput = z.infer<typeof mergeBranchInputSchema>;
