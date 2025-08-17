@@ -1,5 +1,6 @@
 import type { Blob, Content } from "@google/genai";
 import { GoogleGenAI } from "@google/genai";
+import type { MessageInProject } from "@prisma/client";
 
 export const models = [
   "gemini-2.0-flash-lite",
@@ -7,21 +8,53 @@ export const models = [
   "gemini-2.5-flash-lite",
 ] as const;
 
-export const generateContent = async (
-  history: Content[],
-  messageContent: { text: string; file?: Blob },
-  model: (typeof models)[number],
-) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export class Gemini {
+  generateContent = async (
+    history: Content[] | undefined,
+    messageContent: { text: string; file?: Blob },
+  ) => {
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const response = await ai.chats
-    .create({
-      model: model,
-      history: history,
-    })
-    .sendMessage({
-      message: { text: messageContent.text, inlineData: messageContent.file },
+    const response = await ai.chats
+      .create({
+        model: "gemini-2.0-flash-lite",
+        history: history,
+      })
+      .sendMessage({
+        message: { text: messageContent.text, inlineData: messageContent.file },
+      });
+
+    return response.text ?? "";
+  };
+
+  formatHistoryForGemini = (
+    history: MessageInProject[],
+  ): Array<{
+    parts: Array<{ text: string; inlineData?: { data: string } }>;
+    role: string;
+  }> => {
+    return history.flatMap((message) => {
+      const userMessage = {
+        parts: [
+          {
+            text: message.promptText,
+            inlineData: { data: message.promptFile },
+          },
+        ],
+        role: "user",
+      };
+
+      // AIのレスポンス
+      const modelMessage = {
+        parts: [{ text: message.response }],
+        role: "model",
+      };
+
+      return [userMessage, modelMessage];
     });
+  };
 
-  return response.text ?? "";
-};
+  generateSummaryPrompt = (inputText: string) => {
+    return `以下のテキストの要約を一文で作成してください。テキスト：${inputText}`;
+  };
+}

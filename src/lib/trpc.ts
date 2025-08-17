@@ -1,4 +1,4 @@
-import type { ApiRoutes } from "@/app/api/trpc/[trpc]/index";
+import type { ApiRoutes } from "@/app/api/trpc/[trpc]/routers/_index";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 
 export const apiClient = createTRPCClient<ApiRoutes>({
