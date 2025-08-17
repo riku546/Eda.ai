@@ -1,19 +1,25 @@
 "use client";
 
+//このページは削除していいです。
+
+import { apiClient } from "@/lib/trpc";
+import { TRPCClientError } from "@trpc/client";
 import { useState } from "react";
 
 const page = () => {
   const [messages, _setMessages] = useState<string[]>([""]);
 
-  // async function sendChatMessage(message: string): Promise<void> {
-  //   const res = await apiClient.gemini.mutate({
-  //     messageContent: { text: message },
-  //   });
+  const healthcheck = async () => {
+    try {
+      // エラーを発生させる
+      await apiClient.healthcheck.query({ message: "error" });
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        console.error(error.data);
+      }
+    }
+  };
 
-  //   setMessages((prev) => [...prev, res]);
-  // }
-
-  const [input, setInput] = useState("");
   return (
     <div>
       <div>
@@ -21,14 +27,9 @@ const page = () => {
           <div key={message}>{message}</div>
         ))}
       </div>
-      <input
-        onChange={(e) => setInput(e.target.value)}
-        value={input}
-        type="text"
-        className="rounded-md border-2 border-gray-300 p-2"
-      />
-      <button type="button" disabled={!input}>
-        送信
+
+      <button type="button" onClick={healthcheck}>
+        healthcheck
       </button>
     </div>
   );
