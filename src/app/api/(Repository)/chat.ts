@@ -53,4 +53,28 @@ export class ChatRepository {
       };
     });
   };
+
+  getSpecificMessage = async (messageId: string) => {
+    return await prisma.message.findUnique({
+      where: { id: messageId },
+    });
+  };
+
+  createMessage = async (
+    branchId: string,
+    promptText: string,
+    promptFile: string | null,
+    response: string,
+    parentId: string,
+  ) => {
+    return await prisma.message.create({
+      data: {
+        promptText,
+        promptFile,
+        parentId,
+        response,
+        branchId,
+      },
+    });
+  };
 }
