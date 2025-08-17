@@ -10,19 +10,19 @@ export class ProjectController {
   createChat = async (input: NewChatInput) => {
     const [summary, resFromLLM] = await Promise.all([
       gemini.generateContent(undefined, {
-        text: gemini.generateSummaryPrompt(input.inputText),
+        text: gemini.generateSummaryPrompt(input.promptText),
       }),
       gemini.generateContent(undefined, {
-        text: input.inputText,
-        file: { data: input.inputFile ?? undefined },
+        text: input.promptText,
+        file: { data: input.promptFile ?? undefined },
       }),
     ]);
 
     const result = await projectRepository.createChat(
       summary,
       input.projectId,
-      input.inputText,
-      input.inputFile,
+      input.promptText,
+      input.promptFile,
       resFromLLM,
     );
 
