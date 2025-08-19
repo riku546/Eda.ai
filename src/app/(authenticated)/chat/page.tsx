@@ -1,5 +1,7 @@
+// filepath: [page.tsx](http://_vscodecontentref_/0)
 "use client";
 
+import Chat from "@/components/domain/(authenticated)/chat/Chat";
 //このページは削除していいです。
 
 import { apiClient } from "@/lib/trpc";
@@ -20,19 +22,7 @@ const page = () => {
     }
   };
 
-  return (
-    <div>
-      <div>
-        {messages.map((message) => (
-          <div key={message}>{message}</div>
-        ))}
-      </div>
-
-      <button type="button" onClick={healthcheck}>
-        healthcheck
-      </button>
-    </div>
-  );
+  return <Chat messages={messages} onHealthCheck={healthcheck} />;
 };
 
 export default page;
