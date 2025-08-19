@@ -9,7 +9,7 @@ const LoginPage = () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/home",
       });
     } catch (error) {
       console.error(error);
