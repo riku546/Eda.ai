@@ -11,7 +11,7 @@ const gemini = new Gemini();
 const chatRepository = new ChatRepository();
 
 export class ChatController {
-  create = async (input: CreateChatInput) => {
+  create = async (input: CreateChatInput, userId: string) => {
     const [summary, resFromLLM] = await Promise.all([
       gemini.generateContent(undefined, {
         text: gemini.generateSummaryPrompt(input.promptText),
@@ -21,8 +21,6 @@ export class ChatController {
         file: { data: input.promptFile ?? undefined },
       }),
     ]);
-
-    const userId = "fdsjjj";
 
     const result = await chatRepository.create(
       summary,

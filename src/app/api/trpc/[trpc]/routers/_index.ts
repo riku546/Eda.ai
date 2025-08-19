@@ -48,9 +48,9 @@ const chatController = new ChatController();
 export const chatRouter = router({
   new: procedure
     .input(generalCreateChatInputSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       // 変更
-      return await chatController.create(input);
+      return await chatController.create(input, ctx.user.id);
     }),
   branch: router({
     sendMessage: procedure
@@ -80,8 +80,8 @@ export const chatRouter = router({
 const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 export const projectRouter = router({
-  list: procedure.query(async () => {
-    const userId = "fdsjjj";
+  list: procedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
     return await projectRepository.getProjectList(userId);
   }),
   updateInstruction: procedure
