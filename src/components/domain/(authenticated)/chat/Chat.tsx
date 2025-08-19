@@ -3,7 +3,10 @@ import PageContainer from "@/components/common/PageContainer";
 const Chat = ({
   messages,
   onHealthCheck,
-}: { messages: string[]; onHealthCheck: () => void }) => {
+}: {
+  messages: string[];
+  onHealthCheck: () => void;
+}) => {
   return (
     <PageContainer>
       <div>

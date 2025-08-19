@@ -4,10 +4,8 @@ pre-commit:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check .  --no-errors-on-unmatched --files-ignore-unknown=true --colors=off
     typecheck:
-      run: npm run typecheck 
+      run: npm run typecheck
 
-
-    
 post-merge:
   commands:
     prisma-db-push-on-schema-change:
