@@ -2,7 +2,6 @@
 "use client";
 
 import Chat from "@/components/domain/(authenticated)/chat/Chat";
-
 import { apiClient } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
 import { useState } from "react";

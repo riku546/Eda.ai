@@ -33,6 +33,7 @@ export class ChatController {
 
     return result;
   };
+
   sendMessage = async (input: SendMessageInput) => {
     const history = await this.getMessageHistory(input.latestMessageId);
     const formattedHistory = gemini.formatHistoryForGemini(history);
