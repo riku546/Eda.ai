@@ -131,4 +131,8 @@ export class ChatController {
     const { chatId, isPinned } = input;
     return await chatRepository.updateChatIsPinned(chatId, isPinned);
   };
+
+  getChatsByUserId = async (userId: string) => {
+    return await chatRepository.getChatsByUserId(userId);
+  };
 }

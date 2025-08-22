@@ -119,4 +119,12 @@ export class ChatRepository {
       data: { isPinned },
     });
   };
+
+  getChatsByUserId = async (userId: string) => {
+    return await prisma.chat.findMany({
+      where: { userId },
+      // ピン留めされているチャットを上位に表示する
+      orderBy: { isPinned: "desc" },
+    });
+  };
 }

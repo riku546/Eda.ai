@@ -57,6 +57,9 @@ export const chatRouter = router({
     .mutation(async ({ input }) => {
       return await chatController.updateChatIsPinned(input);
     }),
+  getChatsByUserId: procedure.query(async ({ ctx }) => {
+    return await chatController.getChatsByUserId(ctx.user.id);
+  }),
   branch: router({
     sendMessage: procedure
       .input(generalSendMessageInputSchema) // 変更
