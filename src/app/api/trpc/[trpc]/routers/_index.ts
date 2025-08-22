@@ -12,6 +12,7 @@ import {
   mergeBranchInputSchema as generalMergeBranchInputSchema,
   newBranchInputSchema as generalNewBranchInputSchema,
   sendMessageInputSchema as generalSendMessageInputSchema,
+  updateChatIsPinnedInputSchema,
 } from "../../../(schema)/chat";
 import { instructionSchema } from "../../../(schema)/project";
 import {
@@ -49,8 +50,12 @@ export const chatRouter = router({
   new: procedure
     .input(generalCreateChatInputSchema)
     .mutation(async ({ input, ctx }) => {
-      // 変更
       return await chatController.create(input, ctx.user.id);
+    }),
+  updatePinned: procedure
+    .input(updateChatIsPinnedInputSchema)
+    .mutation(async ({ input }) => {
+      return await chatController.updateChatIsPinned(input);
     }),
   branch: router({
     sendMessage: procedure

@@ -121,4 +121,11 @@ export class ChatRepository {
       orderBy: { createdAt: "asc" },
     });
   };
+
+  updateChatIsPinned = async (chatId: string, isPinned: boolean) => {
+    return await prisma.chat.update({
+      where: { id: chatId },
+      data: { isPinned },
+    });
+  };
 }

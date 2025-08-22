@@ -5,6 +5,7 @@ import type {
   CreateChatInput,
   NewBranchInput,
   SendMessageInput,
+  UpdateChatIsPinnedInput,
 } from "../(schema)/chat";
 
 const gemini = new Gemini();
@@ -124,5 +125,10 @@ export class ChatController {
       }
     }
     return descendantBranchIds;
+  };
+
+  updateChatIsPinned = async (input: UpdateChatIsPinnedInput) => {
+    const { chatId, isPinned } = input;
+    return await chatRepository.updateChatIsPinned(chatId, isPinned);
   };
 }
