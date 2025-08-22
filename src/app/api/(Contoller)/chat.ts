@@ -5,13 +5,14 @@ import type {
   CreateChatInput,
   NewBranchInput,
   SendMessageInput,
+  UpdateChatIsPinnedInput,
 } from "../(schema)/chat";
 
 const gemini = new Gemini();
 const chatRepository = new ChatRepository();
 
 export class ChatController {
-  create = async (input: CreateChatInput) => {
+  create = async (input: CreateChatInput, userId: string) => {
     const [summary, resFromLLM] = await Promise.all([
       gemini.generateContent(undefined, {
         text: gemini.generateSummaryPrompt(input.promptText),
@@ -21,8 +22,6 @@ export class ChatController {
         file: { data: input.promptFile ?? undefined },
       }),
     ]);
-
-    const userId = "fdsjjj";
 
     const result = await chatRepository.create(
       summary,
@@ -34,6 +33,7 @@ export class ChatController {
 
     return result;
   };
+
   sendMessage = async (input: SendMessageInput) => {
     const history = await this.getMessageHistory(input.latestMessageId);
     const formattedHistory = gemini.formatHistoryForGemini(history);
@@ -126,5 +126,14 @@ export class ChatController {
       }
     }
     return descendantBranchIds;
+  };
+
+  updateChatIsPinned = async (input: UpdateChatIsPinnedInput) => {
+    const { chatId, isPinned } = input;
+    return await chatRepository.updateChatIsPinned(chatId, isPinned);
+  };
+
+  getChatsByUserId = async (userId: string) => {
+    return await chatRepository.getChatsByUserId(userId);
   };
 }

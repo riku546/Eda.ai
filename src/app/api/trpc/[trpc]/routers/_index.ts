@@ -12,6 +12,7 @@ import {
   mergeBranchInputSchema as generalMergeBranchInputSchema,
   newBranchInputSchema as generalNewBranchInputSchema,
   sendMessageInputSchema as generalSendMessageInputSchema,
+  updateChatIsPinnedInputSchema,
 } from "../../../(schema)/chat";
 import { instructionSchema } from "../../../(schema)/project";
 import {
@@ -48,10 +49,17 @@ const chatController = new ChatController();
 export const chatRouter = router({
   new: procedure
     .input(generalCreateChatInputSchema)
-    .mutation(async ({ input }) => {
-      // 変更
-      return await chatController.create(input);
+    .mutation(async ({ input, ctx }) => {
+      return await chatController.create(input, ctx.user.id);
     }),
+  updatePinned: procedure
+    .input(updateChatIsPinnedInputSchema)
+    .mutation(async ({ input }) => {
+      return await chatController.updateChatIsPinned(input);
+    }),
+  getChatsByUserId: procedure.query(async ({ ctx }) => {
+    return await chatController.getChatsByUserId(ctx.user.id);
+  }),
   branch: router({
     sendMessage: procedure
       .input(generalSendMessageInputSchema) // 変更
@@ -80,8 +88,8 @@ export const chatRouter = router({
 const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 export const projectRouter = router({
-  list: procedure.query(async () => {
-    const userId = "fdsjjj";
+  list: procedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
     return await projectRepository.getProjectList(userId);
   }),
   updateInstruction: procedure

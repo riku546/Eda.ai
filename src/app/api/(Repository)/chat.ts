@@ -1,15 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
 export class ChatRepository {
-  /**
-   * 新しいチャット、ブランチ、メッセージをトランザクション内で一括作成します。
-   * @param summary チャットの要約
-   * @param userId ユーザーID
-   * @param promptText 最初のメッセージのプロンプト
-   * @param promptFile 最初のメッセージに添付するファイル（任意）
-   * @param response AIからの最初のレスポンス
-   * @returns 作成されたchat, branch, messageオブジェクト
-   */
   create = async (
     summary: string,
     userId: string,
@@ -119,6 +110,21 @@ export class ChatRepository {
     return await prisma.message.findMany({
       where: { branchId },
       orderBy: { createdAt: "asc" },
+    });
+  };
+
+  updateChatIsPinned = async (chatId: string, isPinned: boolean) => {
+    return await prisma.chat.update({
+      where: { id: chatId },
+      data: { isPinned },
+    });
+  };
+
+  getChatsByUserId = async (userId: string) => {
+    return await prisma.chat.findMany({
+      where: { userId },
+      // ピン留めされているチャットを上位に表示する
+      orderBy: { isPinned: "desc" },
     });
   };
 }
