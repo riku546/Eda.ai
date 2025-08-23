@@ -1,7 +1,9 @@
 import type { Message } from "@prisma/client";
+import type { RawNodeDatum } from "react-d3-tree";
 import { Gemini } from "../(LLM)/gemini";
 import { ChatRepository } from "../(Repository)/chat";
 import type {
+  BranchStructureInput,
   CreateChatInput,
   NewBranchInput,
   SendMessageInput,
@@ -135,5 +137,51 @@ export class ChatController {
 
   getChatsByUserId = async (userId: string) => {
     return await chatRepository.getChatsByUserId(userId);
+  };
+
+  branchStructure = async (input: BranchStructureInput) => {
+    const parentBranch = await chatRepository.getParentBranchInChat(
+      input.chatId,
+    );
+
+    const branchStructure: RawNodeDatum = {
+      name: "main",
+      attributes: { id: parentBranch.id },
+      children: [],
+    };
+
+    const branchMap = new Map<string, RawNodeDatum>();
+    const queue: string[] = [parentBranch.id];
+    const visited = new Set<string>();
+
+    visited.add(parentBranch.id);
+    branchMap.set(parentBranch.id, branchStructure);
+
+    while (queue.length > 0) {
+      const currentBranchId = queue.shift();
+
+      if (!currentBranchId) break;
+
+      const branch =
+        await chatRepository.getDescendantBranches(currentBranchId);
+      if (!branch) break;
+
+      for (const child of branch.childBranches) {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          queue.push(child.id);
+          const childNode: RawNodeDatum = {
+            name: child.summary,
+            attributes: { id: child.id },
+            children: [],
+          };
+
+          branchMap.get(child.parentBranchId ?? "")?.children?.push(childNode);
+          branchMap.set(child.id, childNode);
+        }
+      }
+    }
+
+    return branchStructure;
   };
 }

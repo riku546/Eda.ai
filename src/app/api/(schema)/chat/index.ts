@@ -32,6 +32,10 @@ export const updateChatIsPinnedInputSchema = z.object({
   isPinned: z.boolean(),
 });
 
+export const branchStructureInputSchema = z.object({
+  chatId: z.string().uuid(),
+});
+
 export type CreateChatInput = z.infer<typeof createChatInputSchema>;
 export type SendMessageInput = z.infer<typeof sendMessageInputSchema>;
 export type GetMessageInput = z.infer<typeof getMessageInputSchema>;
@@ -40,3 +44,4 @@ export type MergeBranchInput = z.infer<typeof mergeBranchInputSchema>;
 export type UpdateChatIsPinnedInput = z.infer<
   typeof updateChatIsPinnedInputSchema
 >;
+export type BranchStructureInput = z.infer<typeof branchStructureInputSchema>;
