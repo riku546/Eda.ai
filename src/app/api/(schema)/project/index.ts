@@ -4,3 +4,7 @@ export const instructionSchema = z.object({
   projectId: z.string().uuid(),
   instruction: z.string(),
 });
+
+export const deleteProjectSchema = z.object({
+  projectId: z.string(),
+});
