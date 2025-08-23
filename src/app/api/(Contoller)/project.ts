@@ -1,4 +1,5 @@
 import type { MessageInProject } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import type { RawNodeDatum } from "react-d3-tree";
 import { Gemini } from "../(LLM)/gemini";
 import { ProjectRepository } from "../(Repository)/project";
@@ -69,6 +70,12 @@ export class ProjectController {
     const parentBranch = await projectRepository.getParentBranchInChat(
       input.chatId,
     );
+    if (!parentBranch) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Parent branch not found",
+      });
+    }
 
     const branchStructure: RawNodeDatum = {
       name: "main",

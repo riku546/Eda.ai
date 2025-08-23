@@ -13,6 +13,7 @@ import {
   ListSubheader,
 } from "@mui/material";
 import type { Chat, Project } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const drawerWidth = 240;
@@ -21,6 +22,8 @@ const Sidebar = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSidebarData = async () => {
@@ -49,8 +52,13 @@ const Sidebar = () => {
     };
     fetchSidebarData();
   }, []);
+
   const toggleDrawer = () => {
     setOpenDrawer((prev) => !prev);
+  };
+
+  const handleChatClick = (chatId: string) => {
+    router.push(`/chat/${chatId}/tree/`);
   };
 
   return (
@@ -113,7 +121,11 @@ const Sidebar = () => {
           }
         >
           {chats.map((chat) => (
-            <ListItem key={chat.id} disablePadding>
+            <ListItem
+              key={chat.id}
+              disablePadding
+              onClick={() => handleChatClick(chat.id)}
+            >
               <ListItemButton>
                 <ListItemText primary={chat.summary} />
               </ListItemButton>

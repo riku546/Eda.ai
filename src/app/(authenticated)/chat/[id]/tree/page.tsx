@@ -30,13 +30,17 @@ export default function Page() {
 
   useEffect(() => {
     if (!mounted) return;
-
-    // データ取得（クライアントでのみ実行）
+    if (typeof params.id !== "string") return;
     (async () => {
-      const res = await apiClient.project.chat.branch.structure.query({
-        chatId: params.id as string,
-      });
-      setBranchStructure(res);
+      try {
+        // Sidebar から渡される chatId は chat テーブルのものなので project ではなく chat ルーターを利用する
+        const res = await apiClient.chat.branch.structure.query({
+          chatId: params.id as string,
+        });
+        setBranchStructure(res);
+      } catch (e) {
+        console.error("Failed to fetch branch structure (chat):", e);
+      }
     })();
 
     // レイアウト計算（クライアントでのみ実行）

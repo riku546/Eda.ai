@@ -165,6 +165,12 @@ export class ChatController {
     const parentBranch = await chatRepository.getParentBranchInChat(
       input.chatId,
     );
+    if (!parentBranch) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Parent branch not found",
+      });
+    }
 
     const branchStructure: RawNodeDatum = {
       name: "main",
