@@ -16,6 +16,7 @@ import {
 } from "../../../(schema)/chat";
 import { instructionSchema } from "../../../(schema)/project";
 import {
+  branchStructureInputSchema,
   mergeBranchInputSchema,
   newBranchInputSchema,
 } from "../../../(schema)/project/branch";
@@ -111,6 +112,11 @@ export const projectRouter = router({
         return await projectController.createChat(input);
       }),
     branch: router({
+      structure: procedure
+        .input(branchStructureInputSchema)
+        .query(async ({ input }) => {
+          return await projectController.branchStructure(input);
+        }),
       getMessage: procedure
         .input(getMessageInputSchema)
         .query(async ({ input }) => {
