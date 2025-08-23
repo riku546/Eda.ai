@@ -3,10 +3,14 @@
 import MessageInputBar from "@/components/common/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import Sidebar from "@/components/common/Sidebar";
-import { useMessageInput } from "@/hooks/common/useMessageInput";
-import { Box, Paper, Snackbar, Stack, Typography } from "@mui/material";
+import { useMessageInput } from "@/hooks/domain/chat/useMessageInput";
+import { _unused } from "@/lib/_unused";
+import { apiClient } from "@/lib/trpc";
+import { Box, Snackbar } from "@mui/material";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import ChatMessage from "./ChatMessage";
 
-// Dummy data for projects and chats for Sidebar
 const dummyProjects = [
   { id: "proj-1", name: "Project Alpha" },
   { id: "proj-2", name: "Project Beta" },
@@ -19,58 +23,45 @@ const dummyChats = [
   { id: "chat-3", title: "Chat about Tailwind" },
 ];
 
-// Dummy data for chat messages
-const dummyMessages = [
-  { id: 1, sender: "user", text: "Hello, I need help with my project." },
-  {
-    id: 2,
-    sender: "bot",
-    text: "Of course! I can help with that. What seems to be the problem?",
-  },
-  {
-    id: 3,
-    sender: "user",
-    text: "I am having trouble with setting up the database connection.",
-  },
-  {
-    id: 4,
-    sender: "bot",
-    text: "I see. Can you please provide me with the database type and the error message you are receiving?",
-  },
-];
-
-const ChatMessage = ({
-  sender,
-  text,
-}: { sender: "user" | "bot"; text: string }) => {
-  const isBot = sender === "bot";
-  return (
-    <Stack
-      direction="row"
-      spacing={2}
-      sx={{
-        justifyContent: isBot ? "flex-start" : "flex-end",
-        mb: 2,
-      }}
-    >
-      <Paper
-        elevation={1}
-        sx={{
-          p: 1.5,
-          borderRadius: 2,
-          bgcolor: isBot ? "grey.200" : "primary.main",
-          color: isBot ? "black" : "primary.contrastText",
-          maxWidth: "70%",
-        }}
-      >
-        <Typography variant="body1">{text}</Typography>
-      </Paper>
-    </Stack>
-  );
-};
-
 const ChatPage = () => {
-  const { toast, setToast, ...messageInput } = useMessageInput();
+  const params = useParams();
+  const branchId = typeof params.branchId === "string" ? params.branchId : "";
+  const [messages, setMessages] = useState<
+    {
+      id: string;
+      branchId: string;
+      createdAt: string;
+      promptText: string;
+      promptFile: string | null;
+      parentId: string | null;
+      response: string;
+    }[]
+  >([]);
+  const [latestMessageId, setLatestMessageId] = useState<string | null>(null);
+
+  const { toast, setToast, ...messageInput } = useMessageInput(
+    _unused,
+    branchId,
+    latestMessageId,
+  );
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (branchId) {
+        try {
+          const res = await apiClient.chat.branch.getMessages.query({
+            branchId,
+          });
+          setMessages(res);
+          setLatestMessageId(res.length > 0 ? res[res.length - 1].id : null);
+        } catch (error) {
+          console.error("Failed to fetch messages:", error);
+        }
+      }
+    };
+
+    fetchMessages();
+  }, [branchId]);
 
   return (
     <PageContainer>
@@ -92,12 +83,13 @@ const ChatPage = () => {
               p: 3,
             }}
           >
-            {dummyMessages.map((msg) => (
-              <ChatMessage
-                key={msg.id}
-                sender={msg.sender as "user" | "bot"}
-                text={msg.text}
-              />
+            {messages.map((msg) => (
+              <div key={msg.id}>
+                <ChatMessage sender="user" text={msg.promptText} />
+                {msg.response && (
+                  <ChatMessage sender="bot" text={msg.response} />
+                )}
+              </div>
             ))}
           </Box>
           <Box sx={{ p: 2, bgcolor: "background.paper" }}>
