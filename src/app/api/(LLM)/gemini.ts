@@ -45,7 +45,7 @@ export class Gemini {
   formatHistoryForGemini = (
     history: MessageInProject[],
   ): Array<{
-    parts: Array<{ text: string; inlineData?: { data: string } }>;
+    parts: Array<{ text?: string; inlineData?: { data: string | undefined } }>;
     role: string;
   }> => {
     return history.flatMap((message) => {
@@ -53,7 +53,15 @@ export class Gemini {
         parts: [
           {
             text: message.promptText,
-            inlineData: { data: message.promptFile },
+          },
+        ],
+        role: "user",
+      };
+
+      const userFile = {
+        parts: [
+          {
+            inlineData: { data: message.promptFile ?? undefined },
           },
         ],
         role: "user",
@@ -65,7 +73,7 @@ export class Gemini {
         role: "model",
       };
 
-      return [userMessage, modelMessage];
+      return [userMessage, userFile, modelMessage];
     });
   };
 
