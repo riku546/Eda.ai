@@ -10,6 +10,7 @@ import {
   ListItemText,
   ListSubheader,
 } from "@mui/material";
+import type { Chat } from "@prisma/client";
 import type React from "react";
 import { useState } from "react";
 
@@ -17,11 +18,6 @@ import { useState } from "react";
 interface Project {
   id: string;
   name: string;
-}
-
-interface Chat {
-  id: string;
-  title: string;
 }
 
 interface SidebarProps {
@@ -100,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ projects, chats }) => {
           {chats.map((chat) => (
             <ListItem key={chat.id} disablePadding>
               <ListItemButton>
-                <ListItemText primary={chat.title} />
+                <ListItemText primary={chat.summary} />
               </ListItemButton>
             </ListItem>
           ))}

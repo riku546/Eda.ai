@@ -1,6 +1,7 @@
-// シンプルに ChatPage を再利用。必要になれば branchId を props で渡す形に拡張可。
-const BranchPage = () => {
-  return <div>こんにちは？？？？？？？？？？？？？？？？？？？</div>;
+import ChatPage from "@/components/domain/(authenticated)/chat/ChatPage";
+
+const Page = () => {
+  return <ChatPage />;
 };
 
-export default BranchPage;
+export default Page;

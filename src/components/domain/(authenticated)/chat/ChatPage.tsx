@@ -1,82 +1,119 @@
 "use client";
 
+import type { ApiRoutes } from "@/app/api/trpc/[trpc]/routers/_index";
 import MessageInputBar from "@/components/common/MessageInputBar";
 import Sidebar from "@/components/common/Sidebar";
-import { useMessageInput } from "@/hooks/common/useMessageInput";
-import { Box, Snackbar, alpha } from "@mui/material";
-import { useRouter } from "next/navigation";
-import ChatMessageList, { type ChatMessageData } from "./ChatMessageList";
+import { useMessageInput } from "@/hooks/domain/chat/useMessageInput";
+import { apiClient } from "@/lib/trpc";
+import { Box, Snackbar } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import type { inferProcedureOutput } from "@trpc/server";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import ChatMessageList from "./ChatMessageList";
 
-import { useParams } from "next/navigation"; // Added useParams import
-/** Dummy data */
-const dummyProjects = [
-  { id: "proj-1", name: "Project Alpha" },
-  { id: "proj-2", name: "Project Beta" },
-  { id: "proj-3", name: "Project Gamma" },
-];
+type Message = Awaited<
+  ReturnType<typeof apiClient.chat.branch.getMessages.query>
+>[number];
+type Project = Awaited<ReturnType<typeof apiClient.project.list.query>>[number];
 
-const dummyChats = [
-  { id: "chat-1", title: "Chat about Next.js" },
-  { id: "chat-2", title: "Chat about Prisma" },
-  { id: "chat-3", title: "Chat about Tailwind" },
-];
-
-const dummyMessages: ChatMessageData[] = [
-  {
-    id: 1,
-    sender: "user",
-    text: "Hello, I need help with my project.",
-    time: "10:12",
-  },
-  {
-    id: 2,
-    sender: "bot",
-    text: "Of course! I can help with that. What seems to be the problem?",
-    time: "10:12",
-  },
-  {
-    id: 3,
-    sender: "user",
-    text: "I am having trouble with setting up the database connection.",
-    time: "10:13",
-  },
-  {
-    id: 4,
-    sender: "bot",
-    text: "I see. Can you please provide me with the database type and the error message you are receiving?",
-    time: "10:14",
-  },
-];
-
-/* ───────── ページ本体 ───────── */
+type ChatsType = inferProcedureOutput<ApiRoutes["chat"]["getChatsByUserId"]>;
 
 const ChatPage = () => {
-  const { toast, setToast, ...messageInput } = useMessageInput();
-  const router = useRouter();
   const params = useParams();
-  const chatId = (params?.id as string) ?? "unknown"; // ルート param ( /chat/[id] )
-  const handleCreateBranch = async (messageId: string | number) => {
+  const router = useRouter();
+  const chatId = typeof params.id === "string" ? params.id : "";
+  const branchId = typeof params.branchId === "string" ? params.branchId : "";
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [chats, setChats] = useState<ChatsType>([]);
+
+  const latestMessageId = useMemo(() => {
+    return messages.length > 0 ? messages[messages.length - 1].id : null;
+  }, [messages]);
+
+  const { toast, setToast, ...messageInput } = useMessageInput(
+    chatId,
+    branchId,
+    latestMessageId,
+  );
+
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        const [projRes, chatRes] = await Promise.all([
+          apiClient.project.list.query(),
+          apiClient.chat.getChatsByUserId.query(),
+        ]);
+        setProjects(projRes);
+        setChats(
+          chatRes.map((chat) => ({
+            ...chat,
+            createdAt: new Date(chat.createdAt),
+            updatedAt: new Date(chat.updatedAt),
+          })),
+        );
+      } catch (error) {
+        console.error("Failed to fetch sidebar data:", error);
+        setToast("プロジェクトまたはチャットの読み込みに失敗しました");
+      }
+    };
+    fetchSidebarData();
+  }, [setToast]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (branchId) {
+        try {
+          const res = await apiClient.chat.branch.getMessages.query({
+            branchId,
+          });
+          setMessages(res);
+        } catch (error) {
+          console.error("Failed to fetch messages:", error);
+        }
+      }
+    };
+
+    fetchMessages();
+  }, [branchId]);
+
+  const handleCreateBranch = async (messageId: string) => {
+    const targetMessage = messages.find((m) => m.id === messageId);
+    if (!targetMessage) {
+      setToast(
+        "ブランチの作成に失敗しました: 対象のメッセージが見つかりません",
+      );
+      return;
+    }
+
     try {
-      // TODO: 実際の入力を整える (summary, parentBranchId, chatId)
-      // const res = await apiClient.chat.branch.new.mutate(input);
-      // 仮: 新規ブランチIDをダミー生成
-      const newBranchId = `branch-${messageId}`; // TODO: 実際は API の戻り値
-      // 成功トースト
-      setToast("Branch created");
-      // リダイレクト: (authenticated) はルートグループ名で URL には含まれない
-      router.push(`/chat/${chatId}/branch/${newBranchId}`);
-    } catch {
-      setToast("Branch create failed");
+      const summary =
+        targetMessage.promptText.substring(0, 50) +
+        (targetMessage.promptText.length > 50 ? "..." : "");
+
+      const res = await apiClient.chat.branch.new.mutate({
+        summary,
+        parentBranchId: branchId,
+        chatId: chatId,
+        messageId: messageId,
+        promptText: targetMessage.promptText,
+        response: targetMessage.response,
+      });
+
+      setToast("新しいブランチを作成しました");
+      router.push(`/chat/${chatId}/branch/${res.id}`);
+    } catch (error) {
+      console.error("Failed to create branch:", error);
+      setToast("ブランチの作成に失敗しました");
     }
   };
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
       <Box sx={{ display: "flex", height: "100dvh" }}>
-        {/* 左サイドバー */}
-        <Sidebar projects={dummyProjects} chats={dummyChats} />
-
-        {/* 右：チャット本体 */}
+        <Sidebar projects={projects} chats={chats} />
         <Box
           component="main"
           sx={{
@@ -89,13 +126,10 @@ const ChatPage = () => {
                ${alpha(t.palette.primary.light, 0.06)} 100%)`,
           }}
         >
-          {/* メッセージリスト */}
           <ChatMessageList
-            messages={dummyMessages}
+            messages={messages}
             onCreateBranch={handleCreateBranch}
           />
-
-          {/* 入力バー（ガラスのピルで浮かせる） */}
           <Box
             sx={(t) => ({
               position: "sticky",
@@ -108,7 +142,6 @@ const ChatPage = () => {
               background: alpha(t.palette.background.paper, 0.8),
             })}
           >
-            {/* 中央寄せ用 Container を除去し全幅化 */}
             <Box sx={{ maxWidth: "100%", px: { xs: 0.5, md: 2 } }}>
               <MessageInputBar {...messageInput} />
             </Box>
