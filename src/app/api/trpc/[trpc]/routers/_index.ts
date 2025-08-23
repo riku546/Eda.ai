@@ -1,7 +1,7 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import { authMiddleware } from "../middleware";
 
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 
 import { ProjectController } from "@/app/api/(Contoller)/project";
 import { ProjectRepository } from "@/app/api/(Repository)/project";
@@ -153,23 +153,6 @@ export const projectRouter = router({
 export const apiRoutes = router({
   project: projectRouter,
   chat: chatRouter,
-  healthcheck: procedure
-    .input(
-      z.object({
-        message: z.enum(["ok", "error"]),
-      }),
-    )
-    .query(async ({ input }) => {
-      if (input.message === "error") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "error",
-        });
-      }
-      return {
-        status: input.message,
-      };
-    }),
 });
 
 export type ApiRoutes = typeof apiRoutes;
