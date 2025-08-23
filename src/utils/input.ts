@@ -1,6 +1,6 @@
 interface MakeInputResult {
   promptText: string;
-  promptFiles: string[] | null;
+  promptFiles: { data: string; mimeType: string }[] | null;
 }
 
 export const makeInput = async (
@@ -9,5 +9,19 @@ export const makeInput = async (
   handleEncodedFiles: (files: File[] | null) => Promise<string[] | null>,
 ): Promise<MakeInputResult> => {
   const encodedFiles = await handleEncodedFiles(files);
-  return { promptText: text, promptFiles: encodedFiles ? encodedFiles : null };
+  const promptFiles: { data: string; mimeType: string }[] = [];
+
+  if (files && encodedFiles) {
+    files.forEach((file, index) => {
+      const encodedFile = encodedFiles[index];
+      if (encodedFile && file instanceof File) {
+        promptFiles.push({ data: encodedFile, mimeType: file.type });
+      }
+    });
+  }
+
+  return {
+    promptText: text,
+    promptFiles: promptFiles.length > 0 ? promptFiles : null,
+  };
 };
