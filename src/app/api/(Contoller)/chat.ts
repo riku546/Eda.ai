@@ -1,4 +1,5 @@
 import type { Message } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import type { RawNodeDatum } from "react-d3-tree";
 import { Gemini } from "../(LLM)/gemini";
 import { ChatRepository } from "../(Repository)/chat";
@@ -77,6 +78,27 @@ export class ChatController {
       input.parentBranchId,
       input.chatId,
     );
+    const message = await chatRepository.getSpecificMessage(input.messageId);
+    if (!message)
+      throw new TRPCError({ code: "NOT_FOUND", message: "Message not found" });
+
+    if (message.parentId) {
+      await chatRepository.createMessage(
+        newBranch.id,
+        input.promptText,
+        null,
+        input.response,
+        message.parentId,
+      );
+    } else {
+      await chatRepository.createMessage(
+        newBranch.id,
+        input.promptText,
+        null,
+        input.response,
+        null,
+      );
+    }
 
     return newBranch;
   };
