@@ -22,7 +22,7 @@ export class ChatController {
       }),
       gemini.generateContent(undefined, {
         text: input.promptText,
-        file: input.promptFile ?? undefined,
+        file: input.promptFile,
       }),
     ]);
 
@@ -30,7 +30,7 @@ export class ChatController {
       summary,
       userId,
       input.promptText,
-      input.promptFile,
+      input.promptFile?.data ?? null,
       resFromLLM,
     );
 
@@ -43,13 +43,13 @@ export class ChatController {
 
     const res = await gemini.generateContent(formattedHistory, {
       text: input.promptText,
-      file: input.promptFile ?? undefined,
+      file: input.promptFile,
     });
 
     const newMessage = await chatRepository.createMessage(
       input.branchId,
       input.promptText,
-      input.promptFile,
+      input.promptFile?.data ?? null,
       res,
       input.latestMessageId,
     );
