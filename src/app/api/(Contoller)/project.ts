@@ -1,6 +1,8 @@
 import type { MessageInProject } from "@prisma/client";
+import type { RawNodeDatum } from "react-d3-tree";
 import { Gemini } from "../(LLM)/gemini";
 import { ProjectRepository } from "../(Repository)/project";
+import type { BranchStructureInput } from "../(schema)/project/branch";
 import type { NewChatInput, SendMessageInput } from "../(schema)/project/chat";
 
 const projectRepository = new ProjectRepository();
@@ -61,6 +63,52 @@ export class ProjectController {
       parentBranchId,
       descendantBranchIds,
     );
+  };
+
+  branchStructure = async (input: BranchStructureInput) => {
+    const parentBranch = await projectRepository.getParentBranchInChat(
+      input.chatId,
+    );
+
+    const branchStructure: RawNodeDatum = {
+      name: "main",
+      attributes: { id: parentBranch.id },
+      children: [],
+    };
+
+    const branchMap = new Map<string, RawNodeDatum>();
+    const queue: string[] = [parentBranch.id];
+    const visited = new Set<string>();
+
+    visited.add(parentBranch.id);
+    branchMap.set(parentBranch.id, branchStructure);
+
+    while (queue.length > 0) {
+      const currentBranchId = queue.shift();
+
+      if (!currentBranchId) break;
+
+      const branch =
+        await projectRepository.getDescendantBranches(currentBranchId);
+      if (!branch) break;
+
+      for (const child of branch.childBranches) {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          queue.push(child.id);
+          const childNode: RawNodeDatum = {
+            name: child.summary,
+            attributes: { id: child.id },
+            children: [],
+          };
+
+          branchMap.get(child.parentBranchId ?? "")?.children?.push(childNode);
+          branchMap.set(child.id, childNode);
+        }
+      }
+    }
+
+    return branchStructure;
   };
 
   //引数のmessageIdから親メッセージを辿ることで、今までのメッセージを取得する
