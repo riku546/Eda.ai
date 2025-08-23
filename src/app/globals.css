@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+.rd3t-label__attributes {
+  display: none;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
