@@ -21,7 +21,7 @@ export class ChatController {
       }),
       gemini.generateContent(undefined, {
         text: input.promptText,
-        file: { data: input.promptFile ?? undefined },
+        file: input.promptFile ?? undefined,
       }),
     ]);
 
@@ -42,7 +42,7 @@ export class ChatController {
 
     const res = await gemini.generateContent(formattedHistory, {
       text: input.promptText,
-      file: { data: input.promptFile ?? undefined },
+      file: input.promptFile ?? undefined,
     });
 
     const newMessage = await chatRepository.createMessage(
