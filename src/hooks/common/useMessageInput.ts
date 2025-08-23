@@ -39,11 +39,13 @@ export function useMessageInput() {
   };
 
   const openPicker = () => fileInputRef.current?.click();
+
   const onPicked = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
     if (f) setToast(`添付: ${f.name}`);
   };
+
   const clearFile = () => setFile(null);
 
   return {
