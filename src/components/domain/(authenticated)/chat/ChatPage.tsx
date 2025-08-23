@@ -3,8 +3,10 @@ import MessageInputBar from "@/components/common/MessageInputBar";
 import Sidebar from "@/components/common/Sidebar";
 import { useMessageInput } from "@/hooks/domain/chat/useMessageInput";
 import { apiClient } from "@/lib/trpc";
+import ParkIcon from "@mui/icons-material/Park";
 import { Box, Snackbar } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import ChatMessageList from "./ChatMessageList";
@@ -111,8 +113,20 @@ const ChatPage = () => {
               background: alpha(t.palette.background.paper, 0.8),
             })}
           >
-            <Box sx={{ maxWidth: "100%", px: { xs: 0.5, md: 2 } }}>
-              <MessageInputBar {...messageInput} />
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                px: { xs: 0.5, md: 2 },
+                width: "100%",
+                gap: 1,
+              }}
+            >
+              <MessageInputBar {...messageInput} sx={{ flex: 1 }} />
+              <Link href="/chat/[id]/branch/tree" as={`/chat/${chatId}/tree`}>
+                <ParkIcon />
+              </Link>
             </Box>
           </Box>
         </Box>

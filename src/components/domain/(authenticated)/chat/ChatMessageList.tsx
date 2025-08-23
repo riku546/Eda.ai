@@ -63,9 +63,36 @@ const Bubble = memo(function Bubble({
           transition: "transform .12s ease, opacity .12s ease",
         })}
       >
-        <Typography variant="body1" component="div" sx={{ lineHeight: 1.6 }}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
-        </Typography>
+        <div className="prose dark:prose-invert">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h1: ({ node, ...props }) => (
+                <Typography variant="h1" {...props} />
+              ),
+              h2: ({ node, ...props }) => (
+                <Typography variant="h2" {...props} />
+              ),
+              h3: ({ node, ...props }) => (
+                <Typography variant="h3" {...props} />
+              ),
+              h4: ({ node, ...props }) => (
+                <Typography variant="h4" {...props} />
+              ),
+              h5: ({ node, ...props }) => (
+                <Typography variant="h5" {...props} />
+              ),
+              h6: ({ node, ...props }) => (
+                <Typography variant="h6" {...props} />
+              ),
+              a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+            }}
+          >
+            {text}
+          </ReactMarkdown>
+        </div>
         {!!time && (
           <Typography
             variant="caption"
