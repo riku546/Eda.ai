@@ -10,12 +10,6 @@ import { Box, Snackbar, Stack, alpha } from "@mui/material";
 import { useEffect } from "react";
 import Title from "./Title";
 
-const dummyChats = [
-  { id: "chat-1", title: "Chat about Next.js" },
-  { id: "chat-2", title: "Chat about Prisma" },
-  { id: "chat-3", title: "Chat about Tailwind" },
-];
-
 export default function HomePage() {
   const { projects, loading, error: projectError } = useProjects();
   const { toast, setToast, ...messageInput } = useFirstMessageInput();
@@ -29,7 +23,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <PageContainer>
-        <Sidebar projects={[]} chats={dummyChats} />
+        <Sidebar projects={[]} chats={[]} />
         <Box
           sx={{
             minHeight: "100dvh",
@@ -46,7 +40,7 @@ export default function HomePage() {
 
   return (
     <PageContainer>
-      <Sidebar projects={projects} chats={dummyChats} />
+      <Sidebar projects={projects} chats={[]} />
       <Box
         sx={{
           minHeight: "100dvh",

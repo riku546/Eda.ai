@@ -21,6 +21,9 @@ export const newBranchInputSchema = z.object({
   summary: z.string(),
   parentBranchId: z.string().uuid(),
   chatId: z.string().uuid(),
+  messageId: z.string().uuid(),
+  promptText: z.string(),
+  response: z.string(),
 });
 
 export const mergeBranchInputSchema = z.object({

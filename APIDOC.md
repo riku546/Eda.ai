@@ -419,8 +419,11 @@ const res = await apiClient.chat.branch.new.mutate(input);
 ```typescript
 {
   summary: string,
-  parentBranchId: string,
-  chatId: string,
+  parentBranchId: string, // uuid
+  chatId: string, // uuid
+  messageId: string, // uuid
+  promptText: string,
+  response: string,
 }
 ```
 

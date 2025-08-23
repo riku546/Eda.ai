@@ -1,13 +1,12 @@
 import { apiClient } from "@/lib/trpc";
 import { fileToBase64 } from "@/utils/encode";
 import { makeInput } from "@/utils/input";
-import type { Params } from "next/dist/server/request/params";
 import { useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 
 export function useMessageInput(
-  _unused: (..._args: unknown[]) => void,
-  branchId: Params["branchId"],
+  _unused: string,
+  branchId: string,
   latestMessageId: string | null,
 ) {
   const [text, setText] = useState("");

@@ -1,49 +1,66 @@
 "use client";
 
+import type { ApiRoutes } from "@/app/api/trpc/[trpc]/routers/_index";
 import MessageInputBar from "@/components/common/MessageInputBar";
-import PageContainer from "@/components/common/PageContainer";
 import Sidebar from "@/components/common/Sidebar";
 import { useMessageInput } from "@/hooks/domain/chat/useMessageInput";
-import { _unused } from "@/lib/_unused";
 import { apiClient } from "@/lib/trpc";
 import { Box, Snackbar } from "@mui/material";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import ChatMessage from "./ChatMessage";
+import { alpha } from "@mui/material/styles";
+import type { inferProcedureOutput } from "@trpc/server";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import ChatMessageList from "./ChatMessageList";
 
-const dummyProjects = [
-  { id: "proj-1", name: "Project Alpha" },
-  { id: "proj-2", name: "Project Beta" },
-  { id: "proj-3", name: "Project Gamma" },
-];
+type Message = Awaited<
+  ReturnType<typeof apiClient.chat.branch.getMessages.query>
+>[number];
+type Project = Awaited<ReturnType<typeof apiClient.project.list.query>>[number];
 
-const dummyChats = [
-  { id: "chat-1", title: "Chat about Next.js" },
-  { id: "chat-2", title: "Chat about Prisma" },
-  { id: "chat-3", title: "Chat about Tailwind" },
-];
+type ChatsType = inferProcedureOutput<ApiRoutes["chat"]["getChatsByUserId"]>;
 
 const ChatPage = () => {
   const params = useParams();
+  const router = useRouter();
+  const chatId = typeof params.id === "string" ? params.id : "";
   const branchId = typeof params.branchId === "string" ? params.branchId : "";
-  const [messages, setMessages] = useState<
-    {
-      id: string;
-      branchId: string;
-      createdAt: string;
-      promptText: string;
-      promptFile: string | null;
-      parentId: string | null;
-      response: string;
-    }[]
-  >([]);
-  const [latestMessageId, setLatestMessageId] = useState<string | null>(null);
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [chats, setChats] = useState<ChatsType>([]);
+
+  const latestMessageId = useMemo(() => {
+    return messages.length > 0 ? messages[messages.length - 1].id : null;
+  }, [messages]);
 
   const { toast, setToast, ...messageInput } = useMessageInput(
-    _unused,
+    chatId,
     branchId,
     latestMessageId,
   );
+
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        const [projRes, chatRes] = await Promise.all([
+          apiClient.project.list.query(),
+          apiClient.chat.getChatsByUserId.query(),
+        ]);
+        setProjects(projRes);
+        setChats(
+          chatRes.map((chat) => ({
+            ...chat,
+            createdAt: new Date(chat.createdAt),
+            updatedAt: new Date(chat.updatedAt),
+          })),
+        );
+      } catch (error) {
+        console.error("Failed to fetch sidebar data:", error);
+        setToast("プロジェクトまたはチャットの読み込みに失敗しました");
+      }
+    };
+    fetchSidebarData();
+  }, [setToast]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -53,7 +70,6 @@ const ChatPage = () => {
             branchId,
           });
           setMessages(res);
-          setLatestMessageId(res.length > 0 ? res[res.length - 1].id : null);
         } catch (error) {
           console.error("Failed to fetch messages:", error);
         }
@@ -63,47 +79,83 @@ const ChatPage = () => {
     fetchMessages();
   }, [branchId]);
 
+  const handleCreateBranch = async (messageId: string) => {
+    const targetMessage = messages.find((m) => m.id === messageId);
+    if (!targetMessage) {
+      setToast(
+        "ブランチの作成に失敗しました: 対象のメッセージが見つかりません",
+      );
+      return;
+    }
+
+    try {
+      const summary =
+        targetMessage.promptText.substring(0, 50) +
+        (targetMessage.promptText.length > 50 ? "..." : "");
+
+      const res = await apiClient.chat.branch.new.mutate({
+        summary,
+        parentBranchId: branchId,
+        chatId: chatId,
+        messageId: messageId,
+        promptText: targetMessage.promptText,
+        response: targetMessage.response,
+      });
+
+      setToast("新しいブランチを作成しました");
+      router.push(`/chat/${chatId}/branch/${res.id}`);
+    } catch (error) {
+      console.error("Failed to create branch:", error);
+      setToast("ブランチの作成に失敗しました");
+    }
+  };
+
   return (
-    <PageContainer>
-      <Box sx={{ display: "flex", height: "100vh" }}>
-        <Sidebar projects={dummyProjects} chats={dummyChats} />
+    <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
+      <Box sx={{ display: "flex", height: "100dvh" }}>
+        <Sidebar projects={projects} chats={chats} />
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-            display: "flex",
-            flexDirection: "column",
-            bgcolor: "background.default",
+            display: "grid",
+            gridTemplateRows: "1fr auto",
+            // 背景をほんのりグラデ
+            background: (t) =>
+              `linear-gradient(180deg, ${t.palette.background.default} 0%,
+               ${alpha(t.palette.primary.light, 0.06)} 100%)`,
           }}
         >
+          <ChatMessageList
+            messages={messages}
+            onCreateBranch={handleCreateBranch}
+          />
           <Box
-            sx={{
-              flexGrow: 1,
-              overflowY: "auto",
-              p: 3,
-            }}
+            sx={(t) => ({
+              position: "sticky",
+              bottom: 0,
+              zIndex: 1,
+              px: { xs: 1.25, md: 2 },
+              py: 1.25,
+              borderTop: `1px solid ${t.palette.divider}`,
+              backdropFilter: "blur(6px)",
+              background: alpha(t.palette.background.paper, 0.8),
+            })}
           >
-            {messages.map((msg) => (
-              <div key={msg.id}>
-                <ChatMessage sender="user" text={msg.promptText} />
-                {msg.response && (
-                  <ChatMessage sender="bot" text={msg.response} />
-                )}
-              </div>
-            ))}
-          </Box>
-          <Box sx={{ p: 2, bgcolor: "background.paper" }}>
-            <MessageInputBar {...messageInput} />
+            <Box sx={{ maxWidth: "100%", px: { xs: 0.5, md: 2 } }}>
+              <MessageInputBar {...messageInput} />
+            </Box>
           </Box>
         </Box>
       </Box>
+
       <Snackbar
         open={!!toast}
         autoHideDuration={2200}
         onClose={() => setToast(null)}
         message={toast ?? ""}
       />
-    </PageContainer>
+    </Box>
   );
 };
 
