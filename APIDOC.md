@@ -255,6 +255,52 @@ const res = await apiClient.project.chat.branch.merge.mutate(input);
 **Response:**
 `void`
 
+### `project.chat.branch.structure`
+
+特定のチャットに紐づくブランチを木構造で取得します。
+
+```typescript
+const res = await apiClient.project.chat.branch.structure.query(input);
+```
+
+**Input:**
+
+```typescript
+{
+  chatId: string,
+}
+```
+
+**Response:**
+
+```typescript
+// react-d3-tree の RawNodeDatum 互換オブジェクト
+{
+  name: string,
+  attributes?: { id: string },
+  children?: RawNodeDatum[],
+}
+```
+
+### `project.delete`
+
+指定したプロジェクトを削除します。
+
+```typescript
+await apiClient.project.delete.mutate(input);
+```
+
+**Input:**
+
+```typescript
+{
+  projectId: string,
+}
+```
+
+**Response:**
+`void`
+
 ---
 
 ## Chat API
@@ -287,7 +333,7 @@ const res = await apiClient.chat.new.mutate(input);
     updatedAt: Date;
     summary: string;
     isPinned: boolean;
-}, 
+},
   branch: {
     id: string;
     createdAt: Date;
@@ -421,4 +467,85 @@ const res = await apiClient.chat.branch.getMessages.query(input);
     createdAt: Date,
   }[],
 ;
+```
+
+### `chat.branch.structure`
+
+特定のチャットに紐づくブランチを木構造で取得します。
+
+```typescript
+const res = await apiClient.chat.branch.structure.query(input);
+```
+
+**Input:**
+
+```typescript
+{
+  chatId: string,
+}
+```
+
+**Response:**
+
+```typescript
+// react-d3-tree の RawNodeDatum 互換オブジェクト
+{
+  name: string,
+  attributes?: { id: string },
+  children?: RawNodeDatum[],
+}
+```
+
+### `chat.updatePinned`
+
+チャットのピン留め状態を更新します。
+
+```typescript
+const res = await apiClient.chat.updatePinned.mutate(input);
+```
+
+**Input:**
+
+```typescript
+{
+  chatId: string,
+  isPinned: boolean,
+}
+```
+
+**Response:**
+
+```typescript
+{
+  id: string,
+  userId: string,
+  createdAt: Date,
+  updatedAt: Date,
+  summary: string,
+  isPinned: boolean,
+}
+```
+
+### `chat.getChatsByUserId`
+
+現在のユーザーのチャット一覧を取得します（ピン留めが上に来るよう並び替え）。
+
+```typescript
+const res = await apiClient.chat.getChatsByUserId.query();
+```
+
+**Input:**
+None
+
+**Response:**
+
+```typescript
+{
+  id: string,
+  userId: string,
+  createdAt: Date,
+  updatedAt: Date,
+  summary: string,
+  isPinned: boolean,
+}[]
 ```
