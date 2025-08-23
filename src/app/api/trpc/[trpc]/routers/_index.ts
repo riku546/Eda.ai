@@ -7,6 +7,7 @@ import { ProjectController } from "@/app/api/(Contoller)/project";
 import { ProjectRepository } from "@/app/api/(Repository)/project";
 import { ChatController } from "../../../(Contoller)/chat";
 import {
+  branchStructureInputSchema as generalBranchStructureInputSchema,
   createChatInputSchema as generalCreateChatInputSchema,
   getMessageInputSchema as generalGetMessageInputSchema,
   mergeBranchInputSchema as generalMergeBranchInputSchema,
@@ -65,6 +66,11 @@ export const chatRouter = router({
     return await chatController.getChatsByUserId(ctx.user.id);
   }),
   branch: router({
+    structure: procedure
+      .input(generalBranchStructureInputSchema)
+      .query(async ({ input }) => {
+        return await chatController.branchStructure(input);
+      }),
     sendMessage: procedure
       .input(generalSendMessageInputSchema) // 変更
       .mutation(async ({ input }) => {
