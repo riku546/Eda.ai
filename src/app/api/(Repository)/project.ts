@@ -151,6 +151,7 @@ export class ProjectRepository {
       },
     });
   };
+
   deleteProject = async (id: string) => {
     return await prisma.project.delete({
       where: { id },

@@ -1,12 +1,13 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import { authMiddleware } from "../middleware";
 
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 
 import { ProjectController } from "@/app/api/(Contoller)/project";
 import { ProjectRepository } from "@/app/api/(Repository)/project";
 import { ChatController } from "../../../(Contoller)/chat";
 import {
+  branchStructureInputSchema as generalBranchStructureInputSchema,
   createChatInputSchema as generalCreateChatInputSchema,
   getMessageInputSchema as generalGetMessageInputSchema,
   mergeBranchInputSchema as generalMergeBranchInputSchema,
@@ -14,7 +15,10 @@ import {
   sendMessageInputSchema as generalSendMessageInputSchema,
   updateChatIsPinnedInputSchema,
 } from "../../../(schema)/chat";
-import { instructionSchema } from "../../../(schema)/project";
+import {
+  deleteProjectSchema,
+  instructionSchema,
+} from "../../../(schema)/project";
 import {
   branchStructureInputSchema,
   mergeBranchInputSchema,
@@ -62,6 +66,11 @@ export const chatRouter = router({
     return await chatController.getChatsByUserId(ctx.user.id);
   }),
   branch: router({
+    structure: procedure
+      .input(generalBranchStructureInputSchema)
+      .query(async ({ input }) => {
+        return await chatController.branchStructure(input);
+      }),
     sendMessage: procedure
       .input(generalSendMessageInputSchema) // 変更
       .mutation(async ({ input }) => {
@@ -89,6 +98,10 @@ export const chatRouter = router({
 const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 export const projectRouter = router({
+  delete: procedure.input(deleteProjectSchema).mutation(async ({ input }) => {
+    await projectRepository.deleteProject(input.projectId);
+  }),
+
   list: procedure.query(async ({ ctx }) => {
     const userId = ctx.user.id;
     return await projectRepository.getProjectList(userId);
@@ -146,23 +159,6 @@ export const projectRouter = router({
 export const apiRoutes = router({
   project: projectRouter,
   chat: chatRouter,
-  healthcheck: procedure
-    .input(
-      z.object({
-        message: z.enum(["ok", "error"]),
-      }),
-    )
-    .query(async ({ input }) => {
-      if (input.message === "error") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "error",
-        });
-      }
-      return {
-        status: input.message,
-      };
-    }),
 });
 
 export type ApiRoutes = typeof apiRoutes;

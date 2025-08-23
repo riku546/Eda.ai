@@ -16,7 +16,7 @@ export class ProjectController {
       }),
       gemini.generateContent(undefined, {
         text: input.promptText,
-        file: { data: input.promptFile ?? undefined },
+        file: input.promptFile ?? undefined,
       }),
     ]);
 
@@ -37,7 +37,7 @@ export class ProjectController {
 
     const res = await gemini.generateContent(formattedHistory, {
       text: input.promptText,
-      file: { data: input.promptFile ?? undefined },
+      file: input.promptFile ?? undefined,
     });
 
     const newMessage = await projectRepository.createMessage(
