@@ -20,7 +20,7 @@ export function useMessageInput(
   ): Promise<string[] | null> => {
     if (!files) return null;
     try {
-      const encodedFiles = await fileToBase64(files);
+      const encodedFiles: string[] = await fileToBase64(files);
       return encodedFiles;
     } catch (error) {
       console.error(error);
@@ -51,9 +51,10 @@ export function useMessageInput(
         setSending(false);
         return;
       }
+
       await apiClient.chat.branch.sendMessage.mutate({
         promptText,
-        promptFile: promptFiles ? promptFiles[0] : null,
+        promptFile: promptFiles ? promptFiles[0].data : null,
         branchId: branchId as string,
         latestMessageId,
       });
