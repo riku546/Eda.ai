@@ -1,7 +1,7 @@
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC } from "@trpc/server";
 import { authMiddleware } from "../middleware";
 
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 
 import { ProjectController } from "@/app/api/(Contoller)/project";
 import { ProjectRepository } from "@/app/api/(Repository)/project";
@@ -14,7 +14,10 @@ import {
   sendMessageInputSchema as generalSendMessageInputSchema,
   updateChatIsPinnedInputSchema,
 } from "../../../(schema)/chat";
-import { instructionSchema } from "../../../(schema)/project";
+import {
+  deleteProjectSchema,
+  instructionSchema,
+} from "../../../(schema)/project";
 import {
   branchStructureInputSchema,
   mergeBranchInputSchema,
@@ -89,6 +92,10 @@ export const chatRouter = router({
 const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 export const projectRouter = router({
+  delete: procedure.input(deleteProjectSchema).mutation(async ({ input }) => {
+    await projectRepository.deleteProject(input.projectId);
+  }),
+
   list: procedure.query(async ({ ctx }) => {
     const userId = ctx.user.id;
     return await projectRepository.getProjectList(userId);
@@ -146,23 +153,6 @@ export const projectRouter = router({
 export const apiRoutes = router({
   project: projectRouter,
   chat: chatRouter,
-  healthcheck: procedure
-    .input(
-      z.object({
-        message: z.enum(["ok", "error"]),
-      }),
-    )
-    .query(async ({ input }) => {
-      if (input.message === "error") {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "error",
-        });
-      }
-      return {
-        status: input.message,
-      };
-    }),
 });
 
 export type ApiRoutes = typeof apiRoutes;

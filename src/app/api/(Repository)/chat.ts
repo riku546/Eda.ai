@@ -127,4 +127,15 @@ export class ChatRepository {
       orderBy: { isPinned: "desc" },
     });
   };
+
+  getParentBranchInChat = async (chatId: string) => {
+    const branches = await prisma.branch.findMany({
+      where: { chatId },
+      orderBy: { createdAt: "asc" },
+      include: { childBranches: true },
+    });
+    const parentBranch = branches[0];
+
+    return parentBranch;
+  };
 }
