@@ -8,7 +8,12 @@ export const chatListInputSchema = z.object({
 export const newChatInputSchema = z.object({
   projectId: z.string().uuid(),
   promptText: z.string(),
-  promptFile: base64ImageSchema.nullable(),
+  promptFile: z
+    .object({
+      data: base64ImageSchema,
+      mimeType: z.string(),
+    })
+    .optional(),
 });
 
 export const getMessageInputSchema = z.object({
@@ -18,7 +23,12 @@ export const getMessageInputSchema = z.object({
 export const sendMessageInputSchema = z.object({
   branchId: z.string().uuid(),
   promptText: z.string(),
-  promptFile: base64ImageSchema.nullable(),
+  promptFile: z
+    .object({
+      data: base64ImageSchema,
+      mimeType: z.string(),
+    })
+    .optional(),
   latestMessageId: z.string().uuid(),
 });
 

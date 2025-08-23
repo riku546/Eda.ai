@@ -25,7 +25,7 @@ export class ProjectController {
       summary,
       input.projectId,
       input.promptText,
-      input.promptFile,
+      input.promptFile?.data ?? null,
       resFromLLM,
     );
 
@@ -44,7 +44,7 @@ export class ProjectController {
     const newMessage = await projectRepository.createMessage(
       input.branchId,
       input.promptText,
-      input.promptFile,
+      input.promptFile?.data ?? null,
       res,
       input.latestMessageId,
     );

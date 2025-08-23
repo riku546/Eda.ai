@@ -46,7 +46,7 @@ export function useFirstMessageInput() {
       );
       const res = await apiClient.chat.new.mutate({
         promptText,
-        promptFile: promptFiles ? promptFiles[0].data : null,
+        promptFile: promptFiles ? promptFiles[0] : undefined,
       });
       setText("");
       setFiles(null);

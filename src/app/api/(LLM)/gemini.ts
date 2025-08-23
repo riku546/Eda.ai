@@ -11,7 +11,7 @@ export const models = [
 export class Gemini {
   generateContent = async (
     history: Content[] | undefined,
-    messageContent: { text: string; file?: string },
+    messageContent: { text: string; file?: { data: string; mimeType: string } },
   ) => {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -31,12 +31,17 @@ export class Gemini {
 
   formatPrompt = (messageContent: {
     text: string;
-    file?: string;
+    file?: { data: string; mimeType: string };
   }): Part[] => {
     const parts: Part[] = [{ text: messageContent.text }];
 
     if (messageContent.file) {
-      parts.push({ inlineData: { data: messageContent.file } });
+      parts.push({
+        inlineData: {
+          data: messageContent.file.data,
+          mimeType: messageContent.file.mimeType,
+        },
+      });
     }
 
     return parts;
@@ -45,7 +50,7 @@ export class Gemini {
   formatHistoryForGemini = (
     history: MessageInProject[],
   ): Array<{
-    parts: Array<{ text: string; inlineData?: { data: string } }>;
+    parts: Array<{ text?: string; inlineData?: { data: string | undefined } }>;
     role: string;
   }> => {
     return history.flatMap((message) => {
@@ -53,7 +58,6 @@ export class Gemini {
         parts: [
           {
             text: message.promptText,
-            inlineData: { data: message.promptFile },
           },
         ],
         role: "user",
@@ -64,6 +68,21 @@ export class Gemini {
         parts: [{ text: message.response }],
         role: "model",
       };
+
+      if (message.promptFile) {
+        const userFile = {
+          parts: [
+            {
+              inlineData: {
+                data: message.promptFile,
+                mimeType: "image/png",
+              },
+            },
+          ],
+          role: "user",
+        };
+        return [userMessage, userFile, modelMessage];
+      }
 
       return [userMessage, modelMessage];
     });
