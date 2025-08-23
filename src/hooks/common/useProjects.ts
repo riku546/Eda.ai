@@ -20,12 +20,6 @@ export function useProjects() {
       } catch (err) {
         console.error("プロジェクト取得エラー:", err);
         setError("プロジェクトの取得に失敗しました");
-        // エラー時はダミーデータを使用
-        setProjects([
-          { id: "proj-1", name: "Project Alpha" },
-          { id: "proj-2", name: "Project Beta" },
-          { id: "proj-3", name: "Project Gamma" },
-        ]);
       } finally {
         setLoading(false);
       }
