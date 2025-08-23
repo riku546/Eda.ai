@@ -56,7 +56,7 @@ export class ChatRepository {
     promptText: string,
     promptFile: string | null,
     response: string,
-    parentId: string,
+    parentId: string | null,
   ) => {
     return await prisma.message.create({
       data: {
