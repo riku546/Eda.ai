@@ -1,13 +1,13 @@
 "use client";
 
 import LoadingIndicator from "@/components/common/LoadingIndicator";
+import MessageInputBar from "@/components/common/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import Sidebar from "@/components/common/Sidebar";
 import { useMessageInput } from "@/hooks/common/useMessageInput";
 import { useProjects } from "@/hooks/common/useProjects";
 import { Box, Snackbar, Stack, alpha } from "@mui/material";
 import { useEffect } from "react";
-import MessageInputBar from "./MessageInputBar";
 import Title from "./Title";
 
 const dummyChats = [

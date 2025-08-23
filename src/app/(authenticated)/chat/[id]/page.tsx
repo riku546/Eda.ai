@@ -1,5 +1,7 @@
-const page = () => {
-  return <div>page</div>;
+import ChatPage from "@/components/domain/(authenticated)/chat/ChatPage";
+
+const Page = () => {
+  return <ChatPage />;
 };
 
-export default page;
+export default Page;
