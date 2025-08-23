@@ -11,6 +11,8 @@ import {
   alpha,
 } from "@mui/material";
 import { memo } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Message = Awaited<
   ReturnType<typeof apiClient.chat.branch.getMessages.query>
@@ -61,8 +63,8 @@ const Bubble = memo(function Bubble({
           transition: "transform .12s ease, opacity .12s ease",
         })}
       >
-        <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-          {text}
+        <Typography variant="body1" component="div" sx={{ lineHeight: 1.6 }}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
         </Typography>
         {!!time && (
           <Typography
@@ -111,15 +113,12 @@ export const ChatMessageList = ({
       <DateSeparator label={dateLabel} />
       {messages.map((msg) => (
         <Box key={msg.id}>
-          {/* ユーザープロンプト */}
           {msg.promptText && (
             <Bubble mine text={msg.promptText} groupedBottom />
           )}
 
-          {/* ボットレスポンス */}
           {msg.response && <Bubble text={msg.response} groupedTop />}
 
-          {/* ブランチ作成アイコン（対話の後） */}
           <Box
             sx={{
               display: "flex",

@@ -19,7 +19,7 @@ export class Gemini {
 
     const response = await ai.chats
       .create({
-        model: "gemini-2.0-flash-lite",
+        model: "gemini-2.5-flash-lite",
         history: history,
       })
       .sendMessage({
@@ -89,6 +89,6 @@ export class Gemini {
   };
 
   generateSummaryPrompt = (inputText: string) => {
-    return `以下のテキストの要約を一文で作成してください。テキスト：${inputText}`;
+    return `以下の質問からあなたが回答することを一行で教えてください${inputText}`;
   };
 }

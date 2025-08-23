@@ -1,5 +1,6 @@
 "use client";
 import { apiClient } from "@/lib/trpc";
+import AddIcon from "@mui/icons-material/Add";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 import {
@@ -61,6 +62,10 @@ const Sidebar = () => {
     router.push(`/chat/${chatId}/tree/`);
   };
 
+  const handleAddChat = () => {
+    router.push("/home");
+  };
+
   return (
     <>
       <IconButton
@@ -113,6 +118,34 @@ const Sidebar = () => {
           ))}
         </List>
         <Divider />
+        <List
+          subheader={
+            <ListSubheader
+              component="div"
+              id="chat-list-subheader"
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              チャット
+              <AddIcon sx={{ fontSize: 20 }} onClick={handleAddChat} />
+            </ListSubheader>
+          }
+        >
+          {chats.map((chat) => (
+            <ListItem
+              key={chat.id}
+              disablePadding
+              onClick={() => handleChatClick(chat.id)}
+            >
+              <ListItemButton>
+                <ListItemText primary={chat.summary} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
         <List
           subheader={
             <ListSubheader component="div" id="chat-list-subheader">

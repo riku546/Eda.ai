@@ -8,7 +8,6 @@ import {
   Chip,
   CircularProgress,
   InputAdornment,
-  Paper,
   Stack,
   TextField,
   alpha,
@@ -39,18 +38,7 @@ export default function MessageInputBar({
   clearFile,
 }: MessageInputBarProps) {
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        p: { xs: 1.25, sm: 1.5 },
-        borderRadius: 6,
-        border: "1px solid",
-        borderColor: "divider",
-        bgcolor: (t) => alpha(t.palette.background.paper, 0.7),
-        backdropFilter: "blur(8px)",
-        boxShadow: (t) => `0 10px 30px ${alpha(t.palette.common.black, 0.08)}`,
-      }}
-    >
+    <>
       {files && files.length > 0 && (
         <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
           <Chip
@@ -132,6 +120,6 @@ export default function MessageInputBar({
       />
 
       <input ref={fileInputRef} type="file" hidden onChange={onPicked} />
-    </Paper>
+    </>
   );
 }
