@@ -75,7 +75,7 @@ export class Gemini {
             {
               inlineData: {
                 data: message.promptFile,
-                mimeType: "image/png",
+                mimeType: "image/jpeg",
               },
             },
           ],
