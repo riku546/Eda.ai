@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import Title from "./Title";
 
 export default function HomePage() {
-  const { projects, loading, error: projectError } = useProjects();
+  const { loading, error: projectError } = useProjects();
   const { toast, setToast, ...messageInput } = useFirstMessageInput();
 
   useEffect(() => {
@@ -23,7 +23,6 @@ export default function HomePage() {
   if (loading) {
     return (
       <PageContainer>
-        <Sidebar projects={[]} chats={[]} />
         <Box
           sx={{
             minHeight: "100dvh",
@@ -40,7 +39,7 @@ export default function HomePage() {
 
   return (
     <PageContainer>
-      <Sidebar projects={projects} chats={[]} />
+      <Sidebar />
       <Box
         sx={{
           minHeight: "100dvh",

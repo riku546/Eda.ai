@@ -1,3 +1,5 @@
+"use client";
+import { apiClient } from "@/lib/trpc";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import DehazeIcon from "@mui/icons-material/Dehaze";
 import {
@@ -10,26 +12,43 @@ import {
   ListItemText,
   ListSubheader,
 } from "@mui/material";
-import type { Chat } from "@prisma/client";
-import type React from "react";
-import { useState } from "react";
-
-// Define placeholder interfaces for the props
-interface Project {
-  id: string;
-  name: string;
-}
-
-interface SidebarProps {
-  projects: Project[];
-  chats: Chat[];
-}
+import type { Chat, Project } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 240;
 
-const Sidebar: React.FC<SidebarProps> = ({ projects, chats }) => {
+const Sidebar = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
 
+  useEffect(() => {
+    const fetchSidebarData = async () => {
+      try {
+        const [projRes, chatRes] = await Promise.all([
+          apiClient.project.list.query(),
+          apiClient.chat.getChatsByUserId.query(),
+        ]);
+        setProjects(
+          projRes.map((project) => ({
+            ...project,
+            createdAt: new Date(project.createdAt),
+            updatedAt: new Date(project.updatedAt),
+          })),
+        );
+        setChats(
+          chatRes.map((chat) => ({
+            ...chat,
+            createdAt: new Date(chat.createdAt),
+            updatedAt: new Date(chat.updatedAt),
+          })),
+        );
+      } catch (error) {
+        console.error("Failed to fetch sidebar data:", error);
+      }
+    };
+    fetchSidebarData();
+  }, []);
   const toggleDrawer = () => {
     setOpenDrawer((prev) => !prev);
   };

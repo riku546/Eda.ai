@@ -55,7 +55,7 @@ export default function Page() {
 
   return (
     <div className="w-full h-screen flex">
-      <Sidebar projects={[]} chats={[]} />
+      <Sidebar />
 
       <div id="treeWrapper" style={{ width: "100%", height: "100%" }}>
         <Tree

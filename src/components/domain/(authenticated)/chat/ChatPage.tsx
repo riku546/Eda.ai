@@ -1,13 +1,10 @@
 "use client";
-
-import type { ApiRoutes } from "@/app/api/trpc/[trpc]/routers/_index";
 import MessageInputBar from "@/components/common/MessageInputBar";
 import Sidebar from "@/components/common/Sidebar";
 import { useMessageInput } from "@/hooks/domain/chat/useMessageInput";
 import { apiClient } from "@/lib/trpc";
 import { Box, Snackbar } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import type { inferProcedureOutput } from "@trpc/server";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import ChatMessageList from "./ChatMessageList";
@@ -15,9 +12,6 @@ import ChatMessageList from "./ChatMessageList";
 type Message = Awaited<
   ReturnType<typeof apiClient.chat.branch.getMessages.query>
 >[number];
-type Project = Awaited<ReturnType<typeof apiClient.project.list.query>>[number];
-
-type ChatsType = inferProcedureOutput<ApiRoutes["chat"]["getChatsByUserId"]>;
 
 const ChatPage = () => {
   const params = useParams();
@@ -26,8 +20,6 @@ const ChatPage = () => {
   const branchId = typeof params.branchId === "string" ? params.branchId : "";
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [chats, setChats] = useState<ChatsType>([]);
 
   const latestMessageId = useMemo(() => {
     return messages.length > 0 ? messages[messages.length - 1].id : null;
@@ -38,29 +30,6 @@ const ChatPage = () => {
     branchId,
     latestMessageId,
   );
-
-  useEffect(() => {
-    const fetchSidebarData = async () => {
-      try {
-        const [projRes, chatRes] = await Promise.all([
-          apiClient.project.list.query(),
-          apiClient.chat.getChatsByUserId.query(),
-        ]);
-        setProjects(projRes);
-        setChats(
-          chatRes.map((chat) => ({
-            ...chat,
-            createdAt: new Date(chat.createdAt),
-            updatedAt: new Date(chat.updatedAt),
-          })),
-        );
-      } catch (error) {
-        console.error("Failed to fetch sidebar data:", error);
-        setToast("プロジェクトまたはチャットの読み込みに失敗しました");
-      }
-    };
-    fetchSidebarData();
-  }, [setToast]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -113,7 +82,7 @@ const ChatPage = () => {
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
       <Box sx={{ display: "flex", height: "100dvh" }}>
-        <Sidebar projects={projects} chats={chats} />
+        <Sidebar />
         <Box
           component="main"
           sx={{
