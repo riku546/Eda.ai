@@ -1,4 +1,4 @@
-import type { Blob, Content } from "@google/genai";
+import type { Content, Part } from "@google/genai";
 import { GoogleGenAI } from "@google/genai";
 import type { MessageInProject } from "@prisma/client";
 
@@ -11,9 +11,11 @@ export const models = [
 export class Gemini {
   generateContent = async (
     history: Content[] | undefined,
-    messageContent: { text: string; file?: Blob },
+    messageContent: { text: string; file?: string },
   ) => {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const prompt = this.formatPrompt(messageContent);
 
     const response = await ai.chats
       .create({
@@ -21,10 +23,23 @@ export class Gemini {
         history: history,
       })
       .sendMessage({
-        message: { text: messageContent.text, inlineData: messageContent.file },
+        message: prompt,
       });
 
     return response.text ?? "";
+  };
+
+  formatPrompt = (messageContent: {
+    text: string;
+    file?: string;
+  }): Part[] => {
+    const parts: Part[] = [{ text: messageContent.text }];
+
+    if (messageContent.file) {
+      parts.push({ inlineData: { data: messageContent.file } });
+    }
+
+    return parts;
   };
 
   formatHistoryForGemini = (
