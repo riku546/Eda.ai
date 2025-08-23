@@ -126,6 +126,18 @@ export class ProjectRepository {
     });
   };
 
+  //chat内で一番古いブランチを取得する（mainブランチ）
+  getParentBranchInChat = async (chatId: string) => {
+    const branches = await prisma.branchInProject.findMany({
+      where: { chatId },
+      orderBy: { createdAt: "asc" },
+      include: { childBranches: true },
+    });
+    const parentBranch = branches[0];
+
+    return parentBranch;
+  };
+
   //特定のbranch（branchIdsは紐付いている全てのブランチ）を親ブランチにマージする
   updateBranchInMessage = async (newBranchId: string, branchIds: string[]) => {
     return await prisma.messageInProject.updateMany({
