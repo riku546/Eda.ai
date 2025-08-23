@@ -27,18 +27,11 @@ interface Chat {
 interface SidebarProps {
   projects: Project[];
   chats: Chat[];
-  onProjectSelect: (id: string) => void;
-  onChatSelect: (id: string) => void;
 }
 
 const drawerWidth = 240;
 
-const Sidebar: React.FC<SidebarProps> = ({
-  projects,
-  chats,
-  onProjectSelect,
-  onChatSelect,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ projects, chats }) => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const toggleDrawer = () => {
@@ -90,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           {projects.map((project) => (
             <ListItem key={project.id} disablePadding>
-              <ListItemButton onClick={() => onProjectSelect(project.id)}>
+              <ListItemButton>
                 <ListItemText primary={project.name} />
               </ListItemButton>
             </ListItem>
@@ -106,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           {chats.map((chat) => (
             <ListItem key={chat.id} disablePadding>
-              <ListItemButton onClick={() => onChatSelect(chat.id)}>
+              <ListItemButton>
                 <ListItemText primary={chat.title} />
               </ListItemButton>
             </ListItem>
