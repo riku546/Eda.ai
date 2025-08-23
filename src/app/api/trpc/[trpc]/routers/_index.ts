@@ -14,7 +14,10 @@ import {
   sendMessageInputSchema as generalSendMessageInputSchema,
   updateChatIsPinnedInputSchema,
 } from "../../../(schema)/chat";
-import { instructionSchema } from "../../../(schema)/project";
+import {
+  deleteProjectSchema,
+  instructionSchema,
+} from "../../../(schema)/project";
 import {
   branchStructureInputSchema,
   mergeBranchInputSchema,
@@ -89,6 +92,10 @@ export const chatRouter = router({
 const projectController = new ProjectController();
 const projectRepository = new ProjectRepository();
 export const projectRouter = router({
+  delete: procedure.input(deleteProjectSchema).mutation(async ({ input }) => {
+    await projectRepository.deleteProject(input.projectId);
+  }),
+
   list: procedure.query(async ({ ctx }) => {
     const userId = ctx.user.id;
     return await projectRepository.getProjectList(userId);
