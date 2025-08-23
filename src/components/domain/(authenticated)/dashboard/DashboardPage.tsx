@@ -19,14 +19,6 @@ const dummyChats = [
   { id: "chat-3", title: "Chat about Tailwind" },
 ];
 
-const handleProjectSelect = (_id: string) => {
-  // TODO: Implement project selection logic
-};
-
-const handleChatSelect = (_id: string) => {
-  // TODO: Implement chat selection logic
-};
-
 const DashboardPage = () => {
   const router = useRouter();
   const handleSignOut = async () => {
@@ -42,12 +34,7 @@ const DashboardPage = () => {
   return (
     <PageContainer>
       <Box sx={{ display: "flex" }}>
-        <Sidebar
-          projects={dummyProjects}
-          chats={dummyChats}
-          onProjectSelect={handleProjectSelect}
-          onChatSelect={handleChatSelect}
-        />
+        <Sidebar projects={dummyProjects} chats={dummyChats} />
         <Box
           component="main"
           sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}

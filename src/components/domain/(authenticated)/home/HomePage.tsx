@@ -1,6 +1,7 @@
 "use client";
 
 import PageContainer from "@/components/common/PageContainer";
+import Sidebar from "@/components/common/Sidebar";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import CallSplitRoundedIcon from "@mui/icons-material/CallSplitRounded";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,6 +27,17 @@ import {
 import { memo, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent, MouseEvent } from "react";
 
+const dummyProjects = [
+  { id: "proj-1", name: "Project Alpha" },
+  { id: "proj-2", name: "Project Beta" },
+  { id: "proj-3", name: "Project Gamma" },
+];
+
+const dummyChats = [
+  { id: "chat-1", title: "Chat about Next.js" },
+  { id: "chat-2", title: "Chat about Prisma" },
+  { id: "chat-3", title: "Chat about Tailwind" },
+];
 /** ─────────────────────────────────────────
  * 小さな表示専用コンポーネント
  * ───────────────────────────────────────── */
@@ -132,6 +144,7 @@ export default function HomePage() {
 
   return (
     <PageContainer>
+      <Sidebar projects={dummyProjects} chats={dummyChats} />
       <Box
         sx={{
           minHeight: "100dvh",
