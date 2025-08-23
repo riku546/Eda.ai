@@ -54,7 +54,7 @@ export function useMessageInput(
 
       await apiClient.chat.branch.sendMessage.mutate({
         promptText,
-        promptFile: promptFiles ? promptFiles[0].data : null,
+        promptFile: promptFiles ? promptFiles[0] : undefined,
         branchId: branchId as string,
         latestMessageId,
       });

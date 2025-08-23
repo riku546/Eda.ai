@@ -3,12 +3,22 @@ import { base64ImageSchema } from "../common";
 
 export const createChatInputSchema = z.object({
   promptText: z.string(),
-  promptFile: base64ImageSchema.nullable(),
+  promptFile: z
+    .object({
+      data: base64ImageSchema,
+      mimeType: z.string(),
+    })
+    .optional(),
 });
 
 export const sendMessageInputSchema = z.object({
   promptText: z.string(),
-  promptFile: base64ImageSchema.nullable(),
+  promptFile: z
+    .object({
+      data: base64ImageSchema,
+      mimeType: z.string(),
+    })
+    .optional(),
   branchId: z.string().uuid(),
   latestMessageId: z.string().uuid(),
 });

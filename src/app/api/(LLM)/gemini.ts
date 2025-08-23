@@ -11,7 +11,7 @@ export const models = [
 export class Gemini {
   generateContent = async (
     history: Content[] | undefined,
-    messageContent: { text: string; file?: string },
+    messageContent: { text: string; file?: { data: string; mimeType: string } },
   ) => {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -31,12 +31,17 @@ export class Gemini {
 
   formatPrompt = (messageContent: {
     text: string;
-    file?: string;
+    file?: { data: string; mimeType: string };
   }): Part[] => {
     const parts: Part[] = [{ text: messageContent.text }];
 
     if (messageContent.file) {
-      parts.push({ inlineData: { data: messageContent.file } });
+      parts.push({
+        inlineData: {
+          data: messageContent.file.data,
+          mimeType: messageContent.file.mimeType,
+        },
+      });
     }
 
     return parts;
@@ -58,22 +63,28 @@ export class Gemini {
         role: "user",
       };
 
-      const userFile = {
-        parts: [
-          {
-            inlineData: { data: message.promptFile ?? undefined },
-          },
-        ],
-        role: "user",
-      };
-
       // AIのレスポンス
       const modelMessage = {
         parts: [{ text: message.response }],
         role: "model",
       };
 
-      return [userMessage, userFile, modelMessage];
+      if (message.promptFile) {
+        const userFile = {
+          parts: [
+            {
+              inlineData: {
+                data: message.promptFile,
+                mimeType: "image/png",
+              },
+            },
+          ],
+          role: "user",
+        };
+        return [userMessage, userFile, modelMessage];
+      }
+
+      return [userMessage, modelMessage];
     });
   };
 
