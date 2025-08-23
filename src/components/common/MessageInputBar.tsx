@@ -1,4 +1,5 @@
 import ToolIcon from "@/components/common/ToolIcon";
+import { sendKeyMapping } from "@/utils/keyMapping";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import CloseIcon from "@mui/icons-material/Close";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -12,15 +13,14 @@ import {
   TextField,
   alpha,
 } from "@mui/material";
-import type { ChangeEvent, KeyboardEvent, RefObject } from "react";
+import type { ChangeEvent, RefObject } from "react";
 
 interface MessageInputBarProps {
   text: string;
+  setText: (text: string) => void;
   sending: boolean;
-  file: File | null;
+  files: File[] | null;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onKey: (e: KeyboardEvent<HTMLInputElement>) => void;
   onSend: () => void;
   openPicker: () => void;
   onPicked: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -29,11 +29,10 @@ interface MessageInputBarProps {
 
 export default function MessageInputBar({
   text,
+  setText,
   sending,
-  file,
+  files,
   fileInputRef,
-  onChange,
-  onKey,
   onSend,
   openPicker,
   onPicked,
@@ -48,15 +47,14 @@ export default function MessageInputBar({
         border: "1px solid",
         borderColor: "divider",
         bgcolor: (t) => alpha(t.palette.background.paper, 0.7),
-        backdropFilter: "blur(8px)", // うっすらガラス感
+        backdropFilter: "blur(8px)",
         boxShadow: (t) => `0 10px 30px ${alpha(t.palette.common.black, 0.08)}`,
       }}
     >
-      {/* 添付があれば上に出す */}
-      {file && (
+      {files && files.length > 0 && (
         <Stack direction="row" alignItems="center" sx={{ mb: 1 }}>
           <Chip
-            label={file.name}
+            label={files[0].name || ""}
             size="small"
             onDelete={clearFile}
             deleteIcon={<CloseIcon />}
@@ -65,13 +63,12 @@ export default function MessageInputBar({
         </Stack>
       )}
 
-      {/* ピル型の入力バー：アイコン群を内包 */}
       <TextField
         aria-label="message input"
-        placeholder="メッセージを入力…（Enter送信 / Shift+Enter改行 / Ctrl or Cmd+Enter送信）"
+        placeholder="メッセージを入力…"
         value={text}
-        onChange={onChange}
-        onKeyDown={onKey}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => sendKeyMapping(e.nativeEvent, onSend)}
         disabled={sending}
         multiline
         minRows={2}
@@ -95,7 +92,7 @@ export default function MessageInputBar({
                 aria-label="send message"
                 variant="contained"
                 onClick={onSend}
-                disabled={!text.trim() && !file}
+                disabled={!text.trim() && !files}
                 sx={{
                   minWidth: 44,
                   height: 36,

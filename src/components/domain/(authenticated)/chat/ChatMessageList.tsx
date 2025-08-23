@@ -1,4 +1,5 @@
 "use client";
+import type { apiClient } from "@/lib/trpc";
 import CallSplitIcon from "@mui/icons-material/CallSplit";
 import {
   Box,
@@ -11,13 +12,11 @@ import {
 } from "@mui/material";
 import { memo } from "react";
 
+type Message = Awaited<
+  ReturnType<typeof apiClient.chat.branch.getMessages.query>
+>[number];
+
 export type ChatActor = "user" | "bot";
-export interface ChatMessageData {
-  id: number | string;
-  sender: ChatActor;
-  text: string;
-  time?: string;
-}
 
 /* Bubble */
 interface BubbleProps {
@@ -98,9 +97,9 @@ export const DateSeparator = memo(function DateSeparator({
 });
 
 export interface ChatMessageListProps {
-  messages: ChatMessageData[];
+  messages: Message[];
   dateLabel?: string;
-  onCreateBranch?: (messageId: string | number) => void;
+  onCreateBranch?: (messageId: string) => void;
 }
 export const ChatMessageList = ({
   messages,
@@ -110,49 +109,38 @@ export const ChatMessageList = ({
   return (
     <Box sx={{ width: "100%", overflowY: "auto", py: 3, px: { xs: 2, md: 3 } }}>
       <DateSeparator label={dateLabel} />
-      {messages.map((msg, i, arr) => {
-        const prev = arr[i - 1];
-        const next = arr[i + 1];
-        const groupedTop = !!prev && prev.sender === msg.sender;
-        const groupedBottom = !!next && next.sender === msg.sender;
-        const node = (
-          <Bubble
-            mine={msg.sender === "user"}
-            text={msg.text}
-            time={!groupedBottom ? msg.time : undefined}
-            groupedTop={groupedTop}
-            groupedBottom={groupedBottom}
-          />
-        );
-        if (msg.sender === "user") {
-          return (
-            <Box key={msg.id}>
-              {node}
-              {/* ブランチ作成アイコン（ユーザーメッセージ直下） */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  mt: 0.25,
-                  pr: 1,
-                }}
-              >
-                <Tooltip title="ブランチ作成" arrow>
-                  <span>
-                    <IconButton
-                      size="small"
-                      onClick={() => onCreateBranch?.(msg.id)}
-                    >
-                      <CallSplitIcon fontSize="small" />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </Box>
-            </Box>
-          );
-        }
-        return <Box key={msg.id}>{node}</Box>;
-      })}
+      {messages.map((msg) => (
+        <Box key={msg.id}>
+          {/* ユーザープロンプト */}
+          {msg.promptText && (
+            <Bubble mine text={msg.promptText} groupedBottom />
+          )}
+
+          {/* ボットレスポンス */}
+          {msg.response && <Bubble text={msg.response} groupedTop />}
+
+          {/* ブランチ作成アイコン（対話の後） */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              mt: 0.25,
+              pl: 1,
+            }}
+          >
+            <Tooltip title="この対話からブランチを作成" arrow>
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={() => onCreateBranch?.(msg.id)}
+                >
+                  <CallSplitIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 };
