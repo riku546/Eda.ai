@@ -1,6 +1,7 @@
 "use client";
 
 import LoadingIndicator from "@/components/common/LoadingIndicator";
+import LogoutButton from "@/components/common/LogoutButton";
 import MessageInputBar from "@/components/common/MessageInputBar";
 import PageContainer from "@/components/common/PageContainer";
 import Sidebar from "@/components/common/Sidebar";
@@ -39,6 +40,7 @@ export default function HomePage() {
 
   return (
     <PageContainer>
+      <LogoutButton />
       <Sidebar />
       <Box
         sx={{
