@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import type { Message } from "@prisma/client";
 import { memo } from "react";
+import type React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -126,11 +127,13 @@ export interface ChatMessageListProps {
   messages: Message[];
   dateLabel?: string;
   onCreateBranch?: (messageId: string) => void;
+  chatListRef?: React.RefObject<HTMLDivElement | null>;
 }
 export const ChatMessageList = ({
   messages,
   dateLabel = "Today",
   onCreateBranch,
+  chatListRef,
 }: ChatMessageListProps) => {
   return (
     <Box sx={{ width: "100%", overflowY: "auto", py: 3, px: { xs: 2, md: 3 } }}>
@@ -164,6 +167,7 @@ export const ChatMessageList = ({
           </Box>
         </Box>
       ))}
+      <Box ref={chatListRef} sx={{ height: "1px" }} />
     </Box>
   );
 };
