@@ -9,7 +9,11 @@ export const fileToBase64 = (files: File[]): Promise<string[]> => {
 
       reader.onload = () => {
         if (typeof reader.result === "string") {
-          resolve(reader.result);
+          //data:imgage/png;base64部分を無くして、base64のデータ部分のみを返す,
+          const s = reader.result;
+          const commaIndex = s.indexOf(",");
+          const base64 = s.substring(commaIndex + 1);
+          resolve(base64);
         } else {
           reject(new Error("ファイルの読み込みに失敗しました"));
         }
