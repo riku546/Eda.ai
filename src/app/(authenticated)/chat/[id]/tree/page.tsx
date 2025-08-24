@@ -1,5 +1,4 @@
 "use client";
-
 import PageContainer from "@/components/common/PageContainer";
 import Sidebar from "@/components/common/Sidebar";
 import { apiClient } from "@/lib/trpc";
@@ -205,8 +204,8 @@ export default function Page() {
             pathClassFunc={() => "detroit-path"}
           />
         </div>
-        <FormGroup className="w-30 flex  items-center">
-          <FormLabel component="legend">merge mode (モノクロ)</FormLabel>
+        <FormGroup className="w-30 flex  items-center pt-2 pr-2">
+          <FormLabel component="legend">merge mode</FormLabel>
           <FormControlLabel
             control={
               <Switch
@@ -215,6 +214,7 @@ export default function Page() {
               />
             }
             label=""
+            sx={{ ml: 1 }}
           />
         </FormGroup>
       </div>
