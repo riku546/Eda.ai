@@ -10,6 +10,11 @@ interface PageContainerProps {
    * ページのコンテンツ
    */
   children: React.ReactNode;
+  /**
+   * デフォルトのセンタリングレイアウトを使用するかどうか
+   * false にすると、幅・高さ100%で素のコンテナとして機能
+   */
+  centerLayout?: boolean;
 }
 
 /**

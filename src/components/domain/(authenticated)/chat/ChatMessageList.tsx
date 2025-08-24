@@ -1,5 +1,5 @@
 "use client";
-import type { apiClient } from "@/lib/trpc";
+
 import CallSplitIcon from "@mui/icons-material/CallSplit";
 import {
   Box,
@@ -10,11 +10,10 @@ import {
   Typography,
   alpha,
 } from "@mui/material";
+import type { Message } from "@prisma/client";
 import { memo } from "react";
-
-type Message = Awaited<
-  ReturnType<typeof apiClient.chat.branch.getMessages.query>
->[number];
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export type ChatActor = "user" | "bot";
 
@@ -61,9 +60,36 @@ const Bubble = memo(function Bubble({
           transition: "transform .12s ease, opacity .12s ease",
         })}
       >
-        <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-          {text}
-        </Typography>
+        <div className="prose dark:prose-invert">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              h1: ({ node, ...props }) => (
+                <Typography variant="h1" {...props} />
+              ),
+              h2: ({ node, ...props }) => (
+                <Typography variant="h2" {...props} />
+              ),
+              h3: ({ node, ...props }) => (
+                <Typography variant="h3" {...props} />
+              ),
+              h4: ({ node, ...props }) => (
+                <Typography variant="h4" {...props} />
+              ),
+              h5: ({ node, ...props }) => (
+                <Typography variant="h5" {...props} />
+              ),
+              h6: ({ node, ...props }) => (
+                <Typography variant="h6" {...props} />
+              ),
+              a: ({ node, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+            }}
+          >
+            {text}
+          </ReactMarkdown>
+        </div>
         {!!time && (
           <Typography
             variant="caption"
@@ -111,15 +137,12 @@ export const ChatMessageList = ({
       <DateSeparator label={dateLabel} />
       {messages.map((msg) => (
         <Box key={msg.id}>
-          {/* ユーザープロンプト */}
           {msg.promptText && (
             <Bubble mine text={msg.promptText} groupedBottom />
           )}
 
-          {/* ボットレスポンス */}
           {msg.response && <Bubble text={msg.response} groupedTop />}
 
-          {/* ブランチ作成アイコン（対話の後） */}
           <Box
             sx={{
               display: "flex",
