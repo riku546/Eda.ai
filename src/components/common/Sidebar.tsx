@@ -75,12 +75,13 @@ const Sidebar = () => {
           top: 8,
           left: openDrawer ? drawerWidth : 0,
           zIndex: 1201,
-          backgroundColor: "primary.main",
+          backgroundColor: "#000",
+          color: "#fff",
           borderRadius: "0 10px 10px 0",
           width: 40,
           height: 60,
           "&:hover": {
-            backgroundColor: "primary.dark",
+            backgroundColor: "#222",
           },
           transition: "left 0.23s ease",
         }}
@@ -96,6 +97,10 @@ const Sidebar = () => {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+            background:
+              "radial-gradient(circle at center, #ffffff 0%, #f5f5f5 60%, #eaeaea 100%)",
+            color: "#000",
+            borderRight: "1px solid #dcdcdc",
           },
         }}
         anchor="left"
@@ -127,29 +132,11 @@ const Sidebar = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                background: "transparent",
               }}
             >
               チャット
               <AddIcon sx={{ fontSize: 20 }} onClick={handleAddChat} />
-            </ListSubheader>
-          }
-        >
-          {chats.map((chat) => (
-            <ListItem
-              key={chat.id}
-              disablePadding
-              onClick={() => handleChatClick(chat.id)}
-            >
-              <ListItemButton>
-                <ListItemText primary={chat.summary} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <List
-          subheader={
-            <ListSubheader component="div" id="chat-list-subheader">
-              チャット
             </ListSubheader>
           }
         >

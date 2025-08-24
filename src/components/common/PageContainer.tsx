@@ -15,23 +15,34 @@ interface PageContainerProps {
    * false にすると、幅・高さ100%で素のコンテナとして機能
    */
   centerLayout?: boolean;
+  /** 背景色 */
+  bgColor?: string;
 }
 
 /**
  * ページのコンテンツをラップするコンテナコンポーネント
  */
-const PageContainer: React.FC<PageContainerProps> = (props) => (
+const PageContainer: React.FC<PageContainerProps> = ({
+  title,
+  children,
+  centerLayout = true,
+  bgColor = "transparent",
+}) => (
   <Container
+    maxWidth={false}
+    disableGutters
     sx={{
       width: "100%",
+      minHeight: "100vh",
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       flexDirection: "column",
+      alignItems: centerLayout ? "center" : "stretch",
+      justifyContent: centerLayout ? "center" : "flex-start",
+      backgroundColor: bgColor,
     }}
   >
-    {!!props.title && <Typography variant="h4">{props.title}</Typography>}
-    {props.children}
+    {!!title && <Typography variant="h4">{title}</Typography>}
+    {children}
   </Container>
 );
 
