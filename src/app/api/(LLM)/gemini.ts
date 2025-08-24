@@ -21,6 +21,9 @@ export class Gemini {
       .create({
         model: "gemini-2.0-flash-lite",
         history: history,
+        config: {
+          systemInstruction: "日本語で簡潔めに回答してください。",
+        },
       })
       .sendMessage({
         message: prompt,

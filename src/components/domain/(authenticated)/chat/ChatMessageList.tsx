@@ -8,7 +8,6 @@ import {
   Stack,
   Tooltip,
   Typography,
-  alpha,
 } from "@mui/material";
 import type { Message } from "@prisma/client";
 import { memo } from "react";
@@ -30,7 +29,7 @@ const Bubble = memo(function Bubble({
   mine,
   text,
   time,
-  groupedTop,
+
   groupedBottom,
 }: BubbleProps) {
   return (
@@ -47,17 +46,10 @@ const Bubble = memo(function Bubble({
           maxWidth: "100%",
           px: 1.5,
           py: 1,
-          borderRadius: 3,
-          borderTopLeftRadius: mine ? 3 : groupedTop ? 3 : 1.25,
-          borderTopRightRadius: mine ? (groupedTop ? 3 : 1.25) : 3,
-          borderBottomLeftRadius: mine ? 3 : groupedBottom ? 3 : 1.25,
-          borderBottomRightRadius: mine ? (groupedBottom ? 3 : 1.25) : 3,
+
           bgcolor: mine ? t.palette.primary.main : t.palette.background.paper,
           color: mine ? t.palette.primary.contrastText : t.palette.text.primary,
-          border: mine ? "none" : `1px solid ${t.palette.divider}`,
-          boxShadow: mine
-            ? `0 2px 10px ${alpha(t.palette.common.black, 0.15)}`
-            : "none",
+
           transition: "transform .12s ease, opacity .12s ease",
         })}
       >
@@ -140,30 +132,45 @@ export const ChatMessageList = ({
       <DateSeparator label={dateLabel} />
       {messages.map((msg) => (
         <Box key={msg.id}>
-          {msg.promptText && (
-            <Bubble mine text={msg.promptText} groupedBottom />
-          )}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 7 }}>
+            <Box>
+              {msg.promptText && (
+                <Bubble mine text={msg.promptText} groupedBottom />
+              )}
+            </Box>
 
-          {msg.response && <Bubble text={msg.response} groupedTop />}
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-              mt: 0.25,
-              pl: 1,
-            }}
-          >
-            <Tooltip title="この対話からブランチを作成" arrow>
-              <span>
-                <IconButton
-                  size="small"
-                  onClick={() => onCreateBranch?.(msg.id)}
-                >
-                  <CallSplitIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Box sx={{ width: "75%" }}>
+                {msg.response && <Bubble text={msg.response} groupedTop />}
+              </Box>
+              <Box
+                sx={{
+                  width: "75%",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  mt: 0.25,
+                  pl: 1,
+                }}
+              >
+                <Tooltip title="この対話からブランチを作成" arrow>
+                  <span>
+                    <IconButton
+                      size="small"
+                      onClick={() => onCreateBranch?.(msg.id)}
+                    >
+                      <CallSplitIcon fontSize="small" />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Box>
+            </Box>
           </Box>
         </Box>
       ))}
