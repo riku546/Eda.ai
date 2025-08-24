@@ -138,4 +138,9 @@ export class ChatRepository {
 
     return parentBranch;
   };
+  deleteBranch = async (branchId: string) => {
+    return await prisma.branch.delete({
+      where: { id: branchId },
+    });
+  };
 }

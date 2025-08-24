@@ -70,6 +70,8 @@ export class ChatController {
       parentBranchId,
       descendantBranchIds,
     );
+
+    await chatRepository.deleteBranch(branchId);
   };
 
   createBranch = async (input: NewBranchInput) => {
