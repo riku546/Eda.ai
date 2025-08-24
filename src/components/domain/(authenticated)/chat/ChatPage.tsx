@@ -6,14 +6,11 @@ import { apiClient } from "@/lib/trpc";
 import ParkIcon from "@mui/icons-material/Park";
 import { Box, Snackbar } from "@mui/material";
 import { alpha } from "@mui/material/styles";
+import type { Message } from "@prisma/client";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import ChatMessageList from "./ChatMessageList";
-
-type Message = Awaited<
-  ReturnType<typeof apiClient.chat.branch.getMessages.query>
->[number];
 
 const ChatPage = () => {
   const params = useParams();
@@ -27,11 +24,12 @@ const ChatPage = () => {
     return messages.length > 0 ? messages[messages.length - 1].id : null;
   }, [messages]);
 
-  const { toast, setToast, ...messageInput } = useMessageInput(
-    chatId,
-    branchId,
-    latestMessageId,
-  );
+  const {
+    toast,
+    setToast,
+    messages: newMessages,
+    ...messageInput
+  } = useMessageInput(chatId, branchId, latestMessageId, messages, setMessages);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -40,7 +38,11 @@ const ChatPage = () => {
           const res = await apiClient.chat.branch.getMessages.query({
             branchId,
           });
-          setMessages(res);
+          const messagesWithDateConversion = res.map((message) => ({
+            ...message,
+            createdAt: new Date(message.createdAt),
+          }));
+          setMessages(messagesWithDateConversion);
         } catch (error) {
           console.error("Failed to fetch messages:", error);
         }
@@ -91,14 +93,13 @@ const ChatPage = () => {
             flexGrow: 1,
             display: "grid",
             gridTemplateRows: "1fr auto",
-            // 背景をほんのりグラデ
             background: (t) =>
               `linear-gradient(180deg, ${t.palette.background.default} 0%,
                ${alpha(t.palette.primary.light, 0.06)} 100%)`,
           }}
         >
           <ChatMessageList
-            messages={messages}
+            messages={newMessages}
             onCreateBranch={handleCreateBranch}
           />
           <Box

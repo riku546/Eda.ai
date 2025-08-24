@@ -1,5 +1,5 @@
 "use client";
-import type { apiClient } from "@/lib/trpc";
+
 import CallSplitIcon from "@mui/icons-material/CallSplit";
 import {
   Box,
@@ -10,13 +10,10 @@ import {
   Typography,
   alpha,
 } from "@mui/material";
+import type { Message } from "@prisma/client";
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
-type Message = Awaited<
-  ReturnType<typeof apiClient.chat.branch.getMessages.query>
->[number];
 
 export type ChatActor = "user" | "bot";
 
