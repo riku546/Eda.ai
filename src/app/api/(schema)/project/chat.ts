@@ -1,5 +1,4 @@
 import z from "zod";
-import { base64ImageSchema } from "../common";
 
 export const chatListInputSchema = z.object({
   projectId: z.string().uuid(),
@@ -10,7 +9,7 @@ export const newChatInputSchema = z.object({
   promptText: z.string(),
   promptFile: z
     .object({
-      data: base64ImageSchema,
+      data: z.string(),
       mimeType: z.string(),
     })
     .optional(),
@@ -25,7 +24,7 @@ export const sendMessageInputSchema = z.object({
   promptText: z.string(),
   promptFile: z
     .object({
-      data: base64ImageSchema,
+      data: z.string(),
       mimeType: z.string(),
     })
     .optional(),
