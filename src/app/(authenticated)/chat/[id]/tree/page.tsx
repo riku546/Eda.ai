@@ -58,25 +58,42 @@ export default function Page() {
 
   if (!mounted || !translate || !branchStructure) return null;
 
-  type BranchNodeDatum = RawNodeDatum & {
-    id?: string;
-    attributes?: { id?: string };
-  };
-
-  const renderCustomNode = ({ nodeDatum }: { nodeDatum: BranchNodeDatum }) => {
+  const renderCustomNode = ({ nodeDatum }: { nodeDatum: RawNodeDatum }) => {
     const W = 200;
     const H = 50;
-    const branchId = nodeDatum?.attributes?.id || nodeDatum?.id;
+    const branchId = nodeDatum?.attributes?.id;
     const isLeaf = !nodeDatum.children || nodeDatum.children.length === 0;
 
     const handleBranchNavigation = () => {
       if (branchId) router.push(`/chat/${params.id}/branch/${branchId}`);
     };
+    const handleBranchMerge = async () => {
+      if (branchId) {
+        await apiClient.chat.branch.merge.mutate({
+          branchId: branchId as string,
+        });
+
+        const res = await apiClient.chat.branch.structure.query({
+          chatId: params.id as string,
+        });
+
+        setBranchStructure(res);
+        setIsChecked(false);
+      }
+    };
+
+    const handleClick = async () => {
+      if (isChecked) {
+        await handleBranchMerge();
+      } else {
+        handleBranchNavigation();
+      }
+    };
     return (
       <g
         role={branchId ? "button" : undefined}
         tabIndex={branchId ? 0 : -1}
-        onClick={handleBranchNavigation}
+        onClick={handleClick}
         onKeyDown={(e) => {
           if (!branchId) return;
           if (e.key === "Enter" || e.key === " ") {
@@ -137,7 +154,10 @@ export default function Page() {
     );
   };
   return (
-    <PageContainer centerLayout={false} bgColor="#fff">
+    <PageContainer
+      centerLayout={false}
+      bgColor={isChecked ? "#A0A0A0" : "#fff"}
+    >
       <div className="w-full h-screen flex">
         <style jsx>{`
           .detroit-path {

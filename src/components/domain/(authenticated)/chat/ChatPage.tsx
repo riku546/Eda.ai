@@ -10,6 +10,7 @@ import type { Message } from "@prisma/client";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useRef } from "react";
 import ChatMessageList from "./ChatMessageList";
 
 const ChatPage = () => {
@@ -17,6 +18,7 @@ const ChatPage = () => {
   const router = useRouter();
   const chatId = typeof params.id === "string" ? params.id : "";
   const branchId = typeof params.branchId === "string" ? params.branchId : "";
+  const chatListRef = useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -51,6 +53,16 @@ const ChatPage = () => {
 
     fetchMessages();
   }, [branchId]);
+
+  // メッセージが更新または取得されたら、チャットリストをスクロールする
+  useEffect(() => {
+    if (chatListRef.current) {
+      //console.debug()はuseEffectの依存配列のエラーを避けるためのものです。
+      const m = messages;
+      console.debug(m);
+      chatListRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleCreateBranch = async (messageId: string) => {
     const targetMessage = messages.find((m) => m.id === messageId);
@@ -101,6 +113,7 @@ const ChatPage = () => {
           <ChatMessageList
             messages={newMessages}
             onCreateBranch={handleCreateBranch}
+            chatListRef={chatListRef}
           />
           <Box
             sx={(t) => ({
