@@ -62,25 +62,26 @@ export default function Page() {
     id?: string;
     attributes?: { id?: string };
   };
+
   const renderCustomNode = ({ nodeDatum }: { nodeDatum: BranchNodeDatum }) => {
     const W = 200;
     const H = 50;
     const branchId = nodeDatum?.attributes?.id || nodeDatum?.id;
     const isLeaf = !nodeDatum.children || nodeDatum.children.length === 0;
 
-    const go = () => {
+    const handleBranchNavigation = () => {
       if (branchId) router.push(`/chat/${params.id}/branch/${branchId}`);
     };
     return (
       <g
         role={branchId ? "button" : undefined}
         tabIndex={branchId ? 0 : -1}
-        onClick={go}
+        onClick={handleBranchNavigation}
         onKeyDown={(e) => {
           if (!branchId) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            go();
+            handleBranchNavigation();
           }
         }}
         style={{ cursor: branchId ? "pointer" : "default" }}
